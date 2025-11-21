@@ -37,7 +37,8 @@ body {
     position: relative;
 }
 
-h2, h3 {
+h2,
+h3 {
     margin: 0 0 10px 0;
     font-weight: normal;
 }
@@ -176,7 +177,8 @@ input[type="number"] {
     color: var(--text-muted);
 }
 
-.prop-row input, .prop-row select {
+.prop-row input,
+.prop-row select {
     background: #333;
     border: 1px solid var(--border);
     color: var(--text);

@@ -6,7 +6,7 @@ BUILDING_DIMENSIONS = (60, 40, 21)  # x, y, z (meters)
 
 # Signal Propagation
 FREQUENCY_HZ = 2.4e9  # 2.4 GHz
-TX_POWER_DBM = 5.0  # Set to 5.0 as requested
+TX_POWER_DBM = 20.0  # Set to 20.0 as requested
 RX_SENSITIVITY_DBM = -80.0
 PATH_LOSS_EXPONENT = 2.5
 REFERENCE_DISTANCE = 1.0  # Meters
