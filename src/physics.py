@@ -53,7 +53,8 @@ class RayTracing:
         if 0 <= ua <= 1 and 0 <= ub <= 1:
             # Check Z height (simple check)
             z_interp = p1.z + ua * (p2.z - p1.z)
-            if 0 <= z_interp <= wall.height:
+            z_base = wall.start.z
+            if z_base <= z_interp <= z_base + wall.height:
                 return True
 
         return False

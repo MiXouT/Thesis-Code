@@ -28,8 +28,8 @@ def create_test_building():
         # Room 1: 0,0 to 30,20 (Lobby/Common)
         r1 = Room(f"Zone A{suffix}", floor_level=floor, height=floor_height)
         r1.add_wall(Point(0, 0, z_base), Point(30, 0, z_base), "concrete")
-        r1.add_wall(Point(30, 0, z_base), Point(30, 20, z_base), "drywall")
-        r1.add_wall(Point(30, 20, z_base), Point(0, 20, z_base), "drywall")
+        r1.add_wall(Point(30, 0, z_base), Point(30, 20, z_base), "concrete")
+        r1.add_wall(Point(30, 20, z_base), Point(0, 20, z_base), "concrete")
         r1.add_wall(Point(0, 20, z_base), Point(0, 0, z_base), "concrete")
         b.add_room(r1)
 
@@ -37,24 +37,24 @@ def create_test_building():
         r2 = Room(f"Zone B{suffix}", floor_level=floor, height=floor_height)
         r2.add_wall(Point(30, 0, z_base), Point(60, 0, z_base), "concrete")
         r2.add_wall(Point(60, 0, z_base), Point(60, 20, z_base), "concrete")
-        r2.add_wall(Point(60, 20, z_base), Point(30, 20, z_base), "drywall")
-        r2.add_wall(Point(30, 20, z_base), Point(30, 0, z_base), "drywall")  # Shared
+        r2.add_wall(Point(60, 20, z_base), Point(30, 20, z_base), "concrete")
+        r2.add_wall(Point(30, 20, z_base), Point(30, 0, z_base), "concrete")  # Shared
         b.add_room(r2)
 
         # Room 3: 0,20 to 30,40
         r3 = Room(f"Zone C{suffix}", floor_level=floor, height=floor_height)
-        r3.add_wall(Point(0, 20, z_base), Point(30, 20, z_base), "drywall")  # Shared
-        r3.add_wall(Point(30, 20, z_base), Point(30, 40, z_base), "drywall")
+        r3.add_wall(Point(0, 20, z_base), Point(30, 20, z_base), "concrete")  # Shared
+        r3.add_wall(Point(30, 20, z_base), Point(30, 40, z_base), "concrete")
         r3.add_wall(Point(30, 40, z_base), Point(0, 40, z_base), "concrete")
         r3.add_wall(Point(0, 40, z_base), Point(0, 20, z_base), "concrete")
         b.add_room(r3)
 
         # Room 4: 30,20 to 60,40
         r4 = Room(f"Zone D{suffix}", floor_level=floor, height=floor_height)
-        r4.add_wall(Point(30, 20, z_base), Point(60, 20, z_base), "drywall")  # Shared
+        r4.add_wall(Point(30, 20, z_base), Point(60, 20, z_base), "concrete")  # Shared
         r4.add_wall(Point(60, 20, z_base), Point(60, 40, z_base), "concrete")
         r4.add_wall(Point(60, 40, z_base), Point(30, 40, z_base), "concrete")
-        r4.add_wall(Point(30, 40, z_base), Point(30, 20, z_base), "drywall")  # Shared
+        r4.add_wall(Point(30, 40, z_base), Point(30, 20, z_base), "concrete")  # Shared
         b.add_room(r4)
 
     return b
