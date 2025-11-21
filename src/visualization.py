@@ -30,7 +30,8 @@ class Visualizer:
             for wall in room.walls:
                 x = [wall.start.x, wall.end.x, wall.end.x, wall.start.x, wall.start.x]
                 y = [wall.start.y, wall.end.y, wall.end.y, wall.start.y, wall.start.y]
-                z = [0, 0, wall.height, wall.height, 0]
+                z_base = wall.start.z
+                z = [z_base, z_base, z_base + wall.height, z_base + wall.height, z_base]
 
                 # Plotly lines for walls
                 traces.append(

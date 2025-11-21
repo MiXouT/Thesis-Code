@@ -15,45 +15,46 @@ import baseline
 
 
 def create_test_building():
-    b = Building("Research Lab")
+    b = Building("Research Lab Complex")
 
-    # 40x20x6 Building (2 Floors)
-    # Floor height = 3.0m
+    # 60x40x21 Building (3 Floors)
+    # Floor height = 7.0m (21m / 3)
+    floor_height = 7.0
 
-    for floor in [0, 1]:
+    for floor in range(3):
         suffix = f"_F{floor}"
-        z_base = floor * 3.0
+        z_base = floor * floor_height
 
-        # Room 1: 0,0 to 20,10 (Scaled up X)
-        r1 = Room(f"Lobby{suffix}", floor_level=floor)
-        r1.add_wall(Point(0, 0, z_base), Point(20, 0, z_base), "concrete")
-        r1.add_wall(Point(20, 0, z_base), Point(20, 10, z_base), "drywall")
-        r1.add_wall(Point(20, 10, z_base), Point(0, 10, z_base), "drywall")
-        r1.add_wall(Point(0, 10, z_base), Point(0, 0, z_base), "concrete")
+        # Room 1: 0,0 to 30,20 (Lobby/Common)
+        r1 = Room(f"Zone A{suffix}", floor_level=floor, height=floor_height)
+        r1.add_wall(Point(0, 0, z_base), Point(30, 0, z_base), "concrete")
+        r1.add_wall(Point(30, 0, z_base), Point(30, 20, z_base), "drywall")
+        r1.add_wall(Point(30, 20, z_base), Point(0, 20, z_base), "drywall")
+        r1.add_wall(Point(0, 20, z_base), Point(0, 0, z_base), "concrete")
         b.add_room(r1)
 
-        # Room 2: 20,0 to 40,10
-        r2 = Room(f"Office A{suffix}", floor_level=floor)
-        r2.add_wall(Point(20, 0, z_base), Point(40, 0, z_base), "concrete")
-        r2.add_wall(Point(40, 0, z_base), Point(40, 10, z_base), "concrete")
-        r2.add_wall(Point(40, 10, z_base), Point(20, 10, z_base), "drywall")
-        r2.add_wall(Point(20, 10, z_base), Point(20, 0, z_base), "drywall")  # Shared
+        # Room 2: 30,0 to 60,20
+        r2 = Room(f"Zone B{suffix}", floor_level=floor, height=floor_height)
+        r2.add_wall(Point(30, 0, z_base), Point(60, 0, z_base), "concrete")
+        r2.add_wall(Point(60, 0, z_base), Point(60, 20, z_base), "concrete")
+        r2.add_wall(Point(60, 20, z_base), Point(30, 20, z_base), "drywall")
+        r2.add_wall(Point(30, 20, z_base), Point(30, 0, z_base), "drywall")  # Shared
         b.add_room(r2)
 
-        # Room 3: 0,10 to 20,20
-        r3 = Room(f"Office B{suffix}", floor_level=floor)
-        r3.add_wall(Point(0, 10, z_base), Point(20, 10, z_base), "drywall")  # Shared
-        r3.add_wall(Point(20, 10, z_base), Point(20, 20, z_base), "drywall")
-        r3.add_wall(Point(20, 20, z_base), Point(0, 20, z_base), "concrete")
-        r3.add_wall(Point(0, 20, z_base), Point(0, 10, z_base), "concrete")
+        # Room 3: 0,20 to 30,40
+        r3 = Room(f"Zone C{suffix}", floor_level=floor, height=floor_height)
+        r3.add_wall(Point(0, 20, z_base), Point(30, 20, z_base), "drywall")  # Shared
+        r3.add_wall(Point(30, 20, z_base), Point(30, 40, z_base), "drywall")
+        r3.add_wall(Point(30, 40, z_base), Point(0, 40, z_base), "concrete")
+        r3.add_wall(Point(0, 40, z_base), Point(0, 20, z_base), "concrete")
         b.add_room(r3)
 
-        # Room 4: 20,10 to 40,20
-        r4 = Room(f"Server Room{suffix}", floor_level=floor)
-        r4.add_wall(Point(20, 10, z_base), Point(40, 10, z_base), "drywall")  # Shared
-        r4.add_wall(Point(40, 10, z_base), Point(40, 20, z_base), "concrete")
-        r4.add_wall(Point(40, 20, z_base), Point(20, 20, z_base), "concrete")
-        r4.add_wall(Point(20, 20, z_base), Point(20, 10, z_base), "drywall")  # Shared
+        # Room 4: 30,20 to 60,40
+        r4 = Room(f"Zone D{suffix}", floor_level=floor, height=floor_height)
+        r4.add_wall(Point(30, 20, z_base), Point(60, 20, z_base), "drywall")  # Shared
+        r4.add_wall(Point(60, 20, z_base), Point(60, 40, z_base), "concrete")
+        r4.add_wall(Point(60, 40, z_base), Point(30, 40, z_base), "concrete")
+        r4.add_wall(Point(30, 40, z_base), Point(30, 20, z_base), "drywall")  # Shared
         b.add_room(r4)
 
     return b
@@ -61,20 +62,19 @@ def create_test_building():
 
 def generate_grid_points(building, spacing=2.0, height_offset=1.5):
     points = []
-    # 40x20 footprint
-    x_range = np.arange(1, 39, spacing)
-    y_range = np.arange(1, 19, spacing)
+    # 60x40 footprint
+    x_range = np.arange(1, 59, spacing)
+    y_range = np.arange(1, 39, spacing)
 
-    # Generate for each floor
-    # Floor 0: z=height_offset
-    # Floor 1: z=3.0 + height_offset
-    floors_z = [height_offset, 3.0 + height_offset]
+    # Generate for each floor (3 floors, 7m each)
+    # Offsets: 2.5, 9.5, 16.5 (assuming 2.5m working height relative to floor base)
+    floors_z = [2.5, 9.5, 16.5]
 
     for z in floors_z:
         for x in x_range:
             for y in y_range:
                 p = Point(x, y, z)
-                # Simple check: is it roughly inside the 40x20 box?
+                # Simple check: is it roughly inside the 60x40 box?
                 if building.is_point_inside(p):
                     points.append(p)
     return points
@@ -88,15 +88,15 @@ def main():
     print(f"Building created: {len(building.rooms)} rooms.")
 
     # 2. Generate Points
-    # Candidates: Coarse grid (e.g., every 4m)
+    # Candidates: Coarse grid (e.g., every 5m for larger building)
     candidates = generate_grid_points(
-        building, spacing=4.0, height_offset=2.5
+        building, spacing=5.0, height_offset=3.5
     )  # Ceiling height
     print(f"Generated {len(candidates)} candidate router locations.")
 
-    # Sensors: Fine grid (e.g., every 1m)
+    # Sensors: Fine grid (e.g., every 1.5m to keep count reasonable)
     sensors = generate_grid_points(
-        building, spacing=1.0, height_offset=1.0
+        building, spacing=1.5, height_offset=1.0
     )  # Desk height
     print(f"Generated {len(sensors)} sensor locations.")
 

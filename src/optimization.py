@@ -3,11 +3,27 @@ from pymoo.core.problem import ElementwiseProblem
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.operators.crossover.pntx import TwoPointCrossover
 from pymoo.operators.mutation.bitflip import BitflipMutation
-from pymoo.operators.sampling.rnd import BinaryRandomSampling
+from pymoo.core.sampling import Sampling
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
 
-from .config import RX_SENSITIVITY_DBM, POPULATION_SIZE, GENERATIONS
+from .config import (
+    RX_SENSITIVITY_DBM,
+    POPULATION_SIZE,
+    GENERATIONS,
+    ROUTER_COUNT_MAX,
+    TX_POWER_DBM,
+)
+
+
+class SparseSampling(Sampling):
+    def _do(self, problem, n_samples, **kwargs):
+        # Initialize with a low probability of being active
+        # Prob = ROUTER_COUNT_MAX / n_var
+        n_var = problem.n_var
+        prob = min(ROUTER_COUNT_MAX / n_var, 0.5)
+        X = np.random.random((n_samples, n_var)) < prob
+        return X
 
 
 class RouterPlacementProblem(ElementwiseProblem):
@@ -60,7 +76,7 @@ class RouterPlacementProblem(ElementwiseProblem):
         # So we check if min_path_loss <= (TxPower - Threshold)
         # Let's assume TxPower is handled outside or we just use loss directly.
         # In config, TX_POWER_DBM = 20.
-        max_allowable_loss = 20.0 - self.threshold
+        max_allowable_loss = TX_POWER_DBM - self.threshold
 
         covered_sensors = np.sum(min_path_losses <= max_allowable_loss)
         total_sensors = self.loss_matrix.shape[1]
@@ -83,7 +99,7 @@ class Optimizer:
 
         self.algorithm = NSGA2(
             pop_size=POPULATION_SIZE,
-            sampling=BinaryRandomSampling(),
+            sampling=SparseSampling(),
             crossover=TwoPointCrossover(),
             mutation=BitflipMutation(),
             eliminate_duplicates=True,
