@@ -1,616 +1,496 @@
 {
-    "name": "Research Lab Complex",
-    "dimensions": {
-        "width": 60,
-        "depth": 40,
-        "height": 21
-    },
-    "floors": [
+  "name": "Research Lab Complex",
+  "dimensions": {
+    "width": 60,
+    "depth": 40,
+    "height": 21
+  },
+  "floors": [
+    {
+      "level": 0,
+      "height": 7,
+      "rooms": [
         {
-            "level": 0,
-            "height": 7.0,
-            "rooms": [
-                {
-                    "name": "Zone A_F0",
-                    "walls": [
-                        {
-                            "start": [
-                                0,
-                                0
-                            ],
-                            "end": [
-                                30,
-                                0
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                0
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                0,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                0,
-                                20
-                            ],
-                            "end": [
-                                0,
-                                0
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone B_F0",
-                    "walls": [
-                        {
-                            "start": [
-                                30,
-                                0
-                            ],
-                            "end": [
-                                60,
-                                0
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                0
-                            ],
-                            "end": [
-                                60,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                0
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone C_F0",
-                    "walls": [
-                        {
-                            "start": [
-                                0,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                40
-                            ],
-                            "end": [
-                                0,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                0,
-                                40
-                            ],
-                            "end": [
-                                0,
-                                20
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone D_F0",
-                    "walls": [
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                60,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                20
-                            ],
-                            "end": [
-                                60,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                40
-                            ],
-                            "end": [
-                                30,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                40
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                }
-            ]
+          "name": "Zone A_F0",
+          "walls": []
         },
         {
-            "level": 1,
-            "height": 7.0,
-            "rooms": [
-                {
-                    "name": "Zone A_F1",
-                    "walls": [
-                        {
-                            "start": [
-                                0,
-                                0
-                            ],
-                            "end": [
-                                30,
-                                0
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                0
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                0,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                0,
-                                20
-                            ],
-                            "end": [
-                                0,
-                                0
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone B_F1",
-                    "walls": [
-                        {
-                            "start": [
-                                30,
-                                0
-                            ],
-                            "end": [
-                                60,
-                                0
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                0
-                            ],
-                            "end": [
-                                60,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                0
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone C_F1",
-                    "walls": [
-                        {
-                            "start": [
-                                0,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                40
-                            ],
-                            "end": [
-                                0,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                0,
-                                40
-                            ],
-                            "end": [
-                                0,
-                                20
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone D_F1",
-                    "walls": [
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                60,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                20
-                            ],
-                            "end": [
-                                60,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                40
-                            ],
-                            "end": [
-                                30,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                40
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                }
-            ]
+          "name": "Zone B_F0",
+          "walls": []
         },
         {
-            "level": 2,
-            "height": 7.0,
-            "rooms": [
-                {
-                    "name": "Zone A_F2",
-                    "walls": [
-                        {
-                            "start": [
-                                0,
-                                0
-                            ],
-                            "end": [
-                                30,
-                                0
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                0
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                0,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                0,
-                                20
-                            ],
-                            "end": [
-                                0,
-                                0
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone B_F2",
-                    "walls": [
-                        {
-                            "start": [
-                                30,
-                                0
-                            ],
-                            "end": [
-                                60,
-                                0
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                0
-                            ],
-                            "end": [
-                                60,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                0
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone C_F2",
-                    "walls": [
-                        {
-                            "start": [
-                                0,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                30,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                40
-                            ],
-                            "end": [
-                                0,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                0,
-                                40
-                            ],
-                            "end": [
-                                0,
-                                20
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                },
-                {
-                    "name": "Zone D_F2",
-                    "walls": [
-                        {
-                            "start": [
-                                30,
-                                20
-                            ],
-                            "end": [
-                                60,
-                                20
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                20
-                            ],
-                            "end": [
-                                60,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                60,
-                                40
-                            ],
-                            "end": [
-                                30,
-                                40
-                            ],
-                            "material": "concrete"
-                        },
-                        {
-                            "start": [
-                                30,
-                                40
-                            ],
-                            "end": [
-                                30,
-                                20
-                            ],
-                            "material": "concrete"
-                        }
-                    ]
-                }
-            ]
+          "name": "Zone C_F0",
+          "walls": []
+        },
+        {
+          "name": "Zone D_F0",
+          "walls": [
+            {
+              "start": [
+                55,
+                0
+              ],
+              "end": [
+                55,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                55,
+                8
+              ],
+              "end": [
+                37,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                8
+              ],
+              "end": [
+                37,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                14
+              ],
+              "end": [
+                34,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                0
+              ],
+              "end": [
+                30,
+                6
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                6
+              ],
+              "end": [
+                27,
+                6
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                0
+              ],
+              "end": [
+                27,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                0
+              ],
+              "end": [
+                27,
+                4
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                8
+              ],
+              "end": [
+                15,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                15,
+                8
+              ],
+              "end": [
+                15,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                15,
+                0
+              ],
+              "end": [
+                27,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                33,
+                14
+              ],
+              "end": [
+                15,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                10
+              ],
+              "end": [
+                15,
+                10
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                15,
+                10
+              ],
+              "end": [
+                15,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                18,
+                14
+              ],
+              "end": [
+                18,
+                11
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                0
+              ],
+              "end": [
+                55,
+                0
+              ],
+              "material": "concrete"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "level": 1,
+      "height": 7,
+      "rooms": [
+        {
+          "name": "Zone A_F1",
+          "walls": []
+        },
+        {
+          "name": "Zone B_F1",
+          "walls": []
+        },
+        {
+          "name": "Zone C_F1",
+          "walls": []
+        },
+        {
+          "name": "Zone D_F1",
+          "walls": [
+            {
+              "start": [
+                27,
+                10
+              ],
+              "end": [
+                27,
+                4
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                0
+              ],
+              "end": [
+                16,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                10
+              ],
+              "end": [
+                16,
+                10
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                16,
+                10
+              ],
+              "end": [
+                16,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                0
+              ],
+              "end": [
+                29,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                0
+              ],
+              "end": [
+                29,
+                3
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                3
+              ],
+              "end": [
+                27,
+                3
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                0
+              ],
+              "end": [
+                27,
+                2
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                12
+              ],
+              "end": [
+                27,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                14
+              ],
+              "end": [
+                21,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                21,
+                14
+              ],
+              "end": [
+                21,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                21,
+                18
+              ],
+              "end": [
+                28,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                18
+              ],
+              "end": [
+                31,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                31,
+                18
+              ],
+              "end": [
+                31,
+                17
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                31,
+                16
+              ],
+              "end": [
+                31,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                31,
+                14
+              ],
+              "end": [
+                35,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                14
+              ],
+              "end": [
+                35,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                14
+              ],
+              "end": [
+                35,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                8
+              ],
+              "end": [
+                46,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                46,
+                8
+              ],
+              "end": [
+                46,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                46,
+                0
+              ],
+              "end": [
+                29,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                36,
+                0
+              ],
+              "end": [
+                36,
+                6
+              ],
+              "material": "concrete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "height": 7,
+      "rooms": [
+        {
+          "name": "Zone A_F2",
+          "walls": []
+        },
+        {
+          "name": "Zone B_F2",
+          "walls": []
+        },
+        {
+          "name": "Zone C_F2",
+          "walls": []
+        },
+        {
+          "name": "Zone D_F2",
+          "walls": []
+        }
+      ]
+    }
+  ]
 }

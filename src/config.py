@@ -19,6 +19,7 @@ WALL_ATTENUATION = {
     "glass": 3.0,
     "wood": 5.0,
 }
+FLOOR_ATTENUATION = 15.0  # dB per floor
 
 # Optimization
 POPULATION_SIZE = 50

@@ -7,6 +7,7 @@ from .config import (
     PATH_LOSS_EXPONENT,
     REFERENCE_DISTANCE,
     GRID_SIZE,
+    FLOOR_ATTENUATION,
 )
 from scipy.spatial.distance import cdist
 
@@ -117,7 +118,13 @@ class LossMatrix:
         for i, c_pt in enumerate(self.candidates):
             for j, s_pt in enumerate(self.sensors):
                 w_loss = RayTracing.calculate_wall_loss(c_pt, s_pt, self.building)
-                wall_losses[i, j] = w_loss
+
+                # Floor Attenuation
+                c_floor = self.building.get_floor_level(c_pt.z)
+                s_floor = self.building.get_floor_level(s_pt.z)
+                f_loss = abs(c_floor - s_floor) * FLOOR_ATTENUATION
+
+                wall_losses[i, j] = w_loss + f_loss
 
         self.matrix = path_losses + wall_losses
         print("Loss Matrix Computation Complete.")

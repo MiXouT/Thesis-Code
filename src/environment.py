@@ -100,6 +100,15 @@ class Building:
                 return True
         return False
 
+    def get_floor_level(self, z: float) -> int:
+        """Returns the floor level for a given Z coordinate."""
+        for room in self.rooms:
+            _, _, min_z, _, _, max_z = room.bounds()
+            # Use a small epsilon for float comparison or strict inequality
+            if min_z <= z < max_z + 0.1:
+                return room.floor_level
+        return 0  # Default to ground floor if undefined
+
     @staticmethod
     def from_json(file_path: str):
         import json

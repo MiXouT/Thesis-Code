@@ -1,0 +1,185 @@
+:root {
+    --bg-dark: #1e1e1e;
+    --bg-panel: #252526;
+    --border: #3e3e42;
+    --accent: #007acc;
+    --text: #cccccc;
+    --text-muted: #858585;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+}
+
+.sidebar {
+    width: 300px;
+    background-color: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+h2, h3 {
+    margin: 0 0 10px 0;
+    font-weight: normal;
+}
+
+h3 {
+    font-size: 0.9em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 15px;
+}
+
+.section {
+    margin-bottom: 15px;
+}
+
+.section.bottom {
+    margin-top: auto;
+}
+
+.tool-group {
+    display: flex;
+    gap: 5px;
+}
+
+.tool-btn {
+    flex: 1;
+    padding: 8px;
+    background: #333;
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.tool-btn:hover {
+    background: #444;
+}
+
+.tool-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.action-btn.primary {
+    background-color: var(--accent);
+    color: white;
+}
+
+.action-btn.secondary {
+    background-color: #333;
+    color: var(--text);
+}
+
+.action-btn.small {
+    padding: 5px;
+    font-size: 0.9em;
+}
+
+.toolbar {
+    height: 30px;
+    background-color: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 20px;
+    font-size: 0.9em;
+}
+
+.canvas-container {
+    flex: 1;
+    background-color: #111;
+    overflow: hidden;
+    position: relative;
+    cursor: crosshair;
+}
+
+canvas {
+    display: block;
+}
+
+input[type="number"] {
+    width: 50px;
+    background: #333;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 2px 5px;
+}
+
+.floor-item {
+    padding: 8px;
+    background: #333;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: flex;
+    justify-content: space-between;
+}
+
+.floor-item.active {
+    border-color: var(--accent);
+    background: #383838;
+}
+
+.hint {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+#status-msg {
+    font-size: 0.8em;
+    margin-top: 5px;
+    text-align: center;
+    height: 1.2em;
+}
+
+.prop-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    align-items: center;
+}
+
+.prop-row label {
+    font-size: 0.9em;
+    color: var(--text-muted);
+}
+
+.prop-row input, .prop-row select {
+    background: #333;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 2px;
+    width: 120px;
+}
