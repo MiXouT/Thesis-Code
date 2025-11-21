@@ -97,4 +97,38 @@ class Building:
                 and min_z <= point.z <= max_z
             ):
                 return True
+                return True
         return False
+
+    @staticmethod
+    def from_json(file_path: str):
+        import json
+
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        building = Building(data["name"])
+
+        for floor_data in data["floors"]:
+            floor_level = floor_data["level"]
+            floor_height = floor_data["height"]
+            z_base = floor_level * floor_height
+
+            for room_data in floor_data["rooms"]:
+                room = Room(
+                    room_data["name"], floor_level=floor_level, height=floor_height
+                )
+
+                for wall_data in room_data["walls"]:
+                    start = wall_data["start"]
+                    end = wall_data["end"]
+                    material = wall_data.get("material", "concrete")
+
+                    p1 = Point(start[0], start[1], z_base)
+                    p2 = Point(end[0], end[1], z_base)
+
+                    room.add_wall(p1, p2, material)
+
+                building.add_room(room)
+
+        return building
