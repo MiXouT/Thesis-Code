@@ -24,6 +24,25 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.wfile.write(b"{}")
         else:
+            # Explicitly handle MIME types for static files to avoid Windows registry issues
+            if self.path.endswith(".js"):
+                self.send_response(200)
+                self.send_header("Content-type", "application/javascript")
+                self.end_headers()
+                with open(
+                    os.path.join(EDITOR_DIR, self.path.lstrip("/").split("?")[0]), "rb"
+                ) as f:
+                    self.wfile.write(f.read())
+                return
+            elif self.path.endswith(".css"):
+                self.send_response(200)
+                self.send_header("Content-type", "text/css")
+                self.end_headers()
+                with open(
+                    os.path.join(EDITOR_DIR, self.path.lstrip("/").split("?")[0]), "rb"
+                ) as f:
+                    self.wfile.write(f.read())
+                return
             super().do_GET()
 
     def do_POST(self):

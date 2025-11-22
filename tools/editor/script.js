@@ -14,6 +14,8 @@ let currentTool = 'select'; // select, wall, room
 let zoom = 1;
 let pan = { x: 50, y: 50 };
 let isDragging = false;
+let isDraggingLabel = false;
+let draggedLabel = null; // {roomIndex: int, offset: {x, y}}
 let lastMouse = { x: 0, y: 0 };
 let gridSize = 1.0; // meters
 
@@ -104,7 +106,7 @@ function snapToGrid(val) {
 
 // Drawing Loop
 function draw() {
-    ctx.fillStyle = '#111';
+    ctx.fillStyle = '#2e3238'; // Match CSS bg
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawGrid();
@@ -117,7 +119,7 @@ function drawGrid() {
     const start = screenToWorld(0, 0);
     const end = screenToWorld(canvas.width, canvas.height);
 
-    ctx.strokeStyle = '#222';
+    ctx.strokeStyle = '#3e444c'; // Lighter grid for dark theme
     ctx.lineWidth = 1;
 
     const startX = Math.floor(start.x / gridSize) * gridSize;
@@ -140,7 +142,7 @@ function drawGrid() {
 
     // Origin
     const origin = worldToScreen(0, 0);
-    ctx.strokeStyle = '#444';
+    ctx.strokeStyle = '#555';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(origin.x, 0);
@@ -156,6 +158,7 @@ function drawContent() {
 
     // Draw Rooms/Walls
     floor.rooms.forEach((room, rIdx) => {
+        // Draw Walls
         room.walls.forEach((wall, wIdx) => {
             const start = worldToScreen(wall.start[0], wall.start[1]);
             const end = worldToScreen(wall.end[0], wall.end[1]);
@@ -179,8 +182,13 @@ function drawContent() {
             ctx.fillRect(end.x - 2, end.y - 2, 4, 4);
         });
 
-        // Draw Room Label (approx center)
-        if (room.walls.length > 0) {
+        // Draw Room Label
+        let lx, ly;
+        if (room.label_pos) {
+            lx = room.label_pos[0];
+            ly = room.label_pos[1];
+        } else if (room.walls.length > 0) {
+            // Fallback to center
             let cx = 0, cy = 0;
             room.walls.forEach(w => {
                 cx += w.start[0] + w.end[0];
@@ -188,12 +196,49 @@ function drawContent() {
             });
             cx /= (room.walls.length * 2);
             cy /= (room.walls.length * 2);
-
-            const s = worldToScreen(cx, cy);
-            ctx.fillStyle = '#888';
-            ctx.font = '12px sans-serif';
-            ctx.fillText(room.name, s.x, s.y);
+            lx = cx;
+            ly = cy;
+        } else {
+            // No walls, no label pos? Skip unless it's a new empty room
+            return;
         }
+
+        const s = worldToScreen(lx, ly);
+
+        // Label Box
+        ctx.font = 'bold 14px "Segoe UI", sans-serif';
+        const textMetrics = ctx.measureText(room.name);
+        const padding = 8;
+        const boxW = textMetrics.width + padding * 2;
+        const boxH = 24;
+
+        // Draw Neumorphic Label Box
+        ctx.fillStyle = '#2e3238';
+
+        // Shadow
+        ctx.shadowColor = '#1e2024';
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 3;
+        ctx.fillRect(s.x - boxW / 2, s.y - boxH / 2, boxW, boxH);
+
+        // Light highlight
+        ctx.shadowColor = '#3e444c';
+        ctx.shadowOffsetX = -2;
+        ctx.shadowOffsetY = -2;
+        ctx.fillRect(s.x - boxW / 2, s.y - boxH / 2, boxW, boxH);
+
+        // Reset shadow
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Text
+        ctx.fillStyle = '#e0e5ec';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(room.name, s.x, s.y);
     });
 
     // Draw Active Drawing
@@ -233,14 +278,25 @@ function setupEvents() {
     canvas.addEventListener('mousedown', onMouseDown);
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mouseup', onMouseUp);
+    canvas.addEventListener('dblclick', onDoubleClick);
     canvas.addEventListener('wheel', onWheel);
 
     // UI
     document.getElementById('btn-save').onclick = saveLayout;
     document.getElementById('btn-load').onclick = loadLayout;
     document.getElementById('btn-add-floor').onclick = addFloor;
-    document.getElementById('grid-size').onchange = (e) => gridSize = parseFloat(e.target.value);
-    document.getElementById('zoom-level').oninput = (e) => zoom = parseFloat(e.target.value);
+    document.getElementById('grid-size').oninput = (e) => {
+        gridSize = parseFloat(e.target.value);
+        draw();
+    };
+    document.getElementById('zoom-level').oninput = (e) => {
+        zoom = parseFloat(e.target.value);
+        draw();
+    };
+
+    // Modal
+    document.getElementById('btn-modal-cancel').onclick = closeModal;
+    document.getElementById('btn-modal-ok').onclick = confirmAddRoom;
 }
 
 function setTool(tool) {
@@ -252,18 +308,40 @@ function setTool(tool) {
 
 function createNewRoom() {
     const floor = layout.floors[currentFloorIndex];
-    const name = prompt("Enter room name:", `Room ${floor.rooms.length + 1}`);
+    const modal = document.getElementById('custom-modal');
+    const input = document.getElementById('modal-input');
+
+    input.value = `Room ${floor.rooms.length + 1}`;
+    modal.classList.remove('hidden');
+    input.focus();
+
+    // Handle Enter key
+    input.onkeydown = (e) => {
+        if (e.key === 'Enter') confirmAddRoom();
+        if (e.key === 'Escape') closeModal();
+    };
+}
+
+function closeModal() {
+    document.getElementById('custom-modal').classList.add('hidden');
+}
+
+function confirmAddRoom() {
+    const name = document.getElementById('modal-input').value;
     if (name) {
+        const floor = layout.floors[currentFloorIndex];
+        // Place at center of screen
+        const centerWorld = screenToWorld(canvas.width / 2, canvas.height / 2);
+
         floor.rooms.push({
             name: name,
-            walls: []
+            walls: [],
+            label_pos: [centerWorld.x, centerWorld.y]
         });
-        updateStatus(`Created room: ${name}. Select it to add walls.`);
-        // Auto-select the new room for adding walls?
-        // For simplicity, we just add it. The user needs to select a room to add walls to it.
-        // Actually, let's make "Draw Wall" always add to the *last* room or *selected* room.
-        // For now, let's assume we add to the last created room if none selected.
+        updateStatus(`Created label: ${name}. Drag to move.`);
+        draw();
     }
+    closeModal();
 }
 
 function onMouseDown(e) {
@@ -285,6 +363,16 @@ function onMouseDown(e) {
             drawingWall = { start: snapped, end: snapped };
         }
     } else if (currentTool === 'select') {
+        // Check for label hit first (prioritize labels)
+        const labelHit = hitTestLabel(world.x, world.y);
+        if (labelHit) {
+            isDraggingLabel = true;
+            draggedLabel = labelHit;
+            selectedObject = { type: 'room', floor: currentFloorIndex, room: labelHit.roomIndex };
+            updatePropertiesPanel();
+            return;
+        }
+
         // Simple hit testing (find closest wall)
         selectObjectAt(world.x, world.y);
     }
@@ -305,6 +393,13 @@ function onMouseMove(e) {
         return;
     }
 
+    if (isDraggingLabel && draggedLabel) {
+        const floor = layout.floors[currentFloorIndex];
+        const room = floor.rooms[draggedLabel.roomIndex];
+        room.label_pos = [world.x, world.y];
+        return; // Don't do other checks
+    }
+
     if (drawingWall) {
         drawingWall.end = { x: snapToGrid(world.x), y: snapToGrid(world.y) };
     }
@@ -316,22 +411,31 @@ function onMouseUp(e) {
         return;
     }
 
+    if (isDraggingLabel) {
+        isDraggingLabel = false;
+        draggedLabel = null;
+        return;
+    }
+
     if (drawingWall) {
         // Finish wall
         const floor = layout.floors[currentFloorIndex];
         if (floor.rooms.length === 0) {
-            alert("Please create a room first!");
+            alert("Please create a room/label first!");
             drawingWall = null;
             return;
         }
 
         // Add to the last room (or selected room if we had that logic)
-        // For MVP: Add to the last room
-        const room = floor.rooms[floor.rooms.length - 1];
+        // If a room is selected, add to it. Otherwise add to last.
+        let targetRoom = floor.rooms[floor.rooms.length - 1];
+        if (selectedObject && selectedObject.type === 'room' && selectedObject.floor === currentFloorIndex) {
+            targetRoom = floor.rooms[selectedObject.room];
+        }
 
         // Don't add zero-length walls
         if (drawingWall.start.x !== drawingWall.end.x || drawingWall.start.y !== drawingWall.end.y) {
-            room.walls.push({
+            targetRoom.walls.push({
                 start: [drawingWall.start.x, drawingWall.start.y],
                 end: [drawingWall.end.x, drawingWall.end.y],
                 material: 'concrete'
@@ -343,13 +447,55 @@ function onMouseUp(e) {
     }
 }
 
+function onDoubleClick(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const world = screenToWorld(mx, my);
+
+    const labelHit = hitTestLabel(world.x, world.y);
+    if (labelHit) {
+        const floor = layout.floors[currentFloorIndex];
+        const room = floor.rooms[labelHit.roomIndex];
+        const newName = prompt("Rename label:", room.name);
+        if (newName) {
+            room.name = newName;
+            updatePropertiesPanel();
+        }
+    }
+}
+
 function onWheel(e) {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    zoom *= delta;
-    // Clamp zoom
-    zoom = Math.max(0.1, Math.min(zoom, 5));
+    const zoomSpeed = 0.1;
+    if (e.deltaY < 0) {
+        zoom = Math.min(zoom + zoomSpeed, 3);
+    } else {
+        zoom = Math.max(zoom - zoomSpeed, 0.5);
+    }
     document.getElementById('zoom-level').value = zoom;
+    draw();
+}
+
+function hitTestLabel(wx, wy) {
+    const floor = layout.floors[currentFloorIndex];
+    // Approximate hit box size in world units
+    // 14px font ~ 0.7m height roughly? Let's be generous.
+    const hitW = 4.0; // meters
+    const hitH = 1.5; // meters
+
+    for (let i = 0; i < floor.rooms.length; i++) {
+        const room = floor.rooms[i];
+        if (!room.label_pos) continue;
+
+        const lx = room.label_pos[0];
+        const ly = room.label_pos[1];
+
+        if (Math.abs(wx - lx) < hitW / 2 && Math.abs(wy - ly) < hitH / 2) {
+            return { roomIndex: i };
+        }
+    }
+    return null;
 }
 
 function selectObjectAt(wx, wy) {
@@ -440,6 +586,31 @@ function updatePropertiesPanel() {
     const panel = document.getElementById('properties-panel');
     if (!selectedObject) {
         panel.innerHTML = '<p class="hint">Select an object to edit properties</p>';
+        return;
+    }
+
+    if (selectedObject.type === 'room') {
+        const floor = layout.floors[selectedObject.floor];
+        const room = floor.rooms[selectedObject.room];
+        panel.innerHTML = `
+            <div class="prop-row">
+                <label>Label</label>
+                <input type="text" id="prop-room-name" value="${room.name}">
+            </div>
+            <button id="btn-delete-room" class="action-btn small" style="background:#a00">Delete Label & Walls</button>
+         `;
+
+        document.getElementById('prop-room-name').onchange = (e) => {
+            room.name = e.target.value;
+            draw();
+        };
+
+        document.getElementById('btn-delete-room').onclick = () => {
+            floor.rooms.splice(selectedObject.room, 1);
+            selectedObject = null;
+            updatePropertiesPanel();
+            draw();
+        };
         return;
     }
 

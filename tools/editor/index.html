@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IoT Layout Editor</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=neumorphic">
 </head>
 
 <body>
@@ -52,6 +52,16 @@
             </div>
             <div class="canvas-container">
                 <canvas id="editor-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+    <div id="custom-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>New Room Label</h3>
+            <input type="text" id="modal-input" placeholder="Enter room name">
+            <div class="modal-actions">
+                <button id="btn-modal-cancel" class="tool-btn">Cancel</button>
+                <button id="btn-modal-ok" class="tool-btn active">Create</button>
             </div>
         </div>
     </div>

@@ -44,6 +44,7 @@ class Room:
     walls: List[Wall] = field(default_factory=list)
     floor_level: int = 0
     height: float = 3.0
+    label_pos: Optional[Tuple[float, float]] = None  # (x, y) coordinates
 
     def add_wall(self, start: Point, end: Point, material: str = "concrete"):
         wall = Wall(start, end, self.height, material)
@@ -125,7 +126,14 @@ class Building:
 
             for room_data in floor_data["rooms"]:
                 room = Room(
-                    room_data["name"], floor_level=floor_level, height=floor_height
+                    room_data["name"],
+                    floor_level=floor_level,
+                    height=floor_height,
+                    label_pos=(
+                        tuple(room_data["label_pos"])
+                        if "label_pos" in room_data
+                        else None
+                    ),
                 )
 
                 for wall_data in room_data["walls"]:

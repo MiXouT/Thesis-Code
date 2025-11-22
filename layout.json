@@ -257,6 +257,48 @@
               "material": "concrete"
             }
           ]
+        },
+        {
+          "name": "Room 5",
+          "walls": [
+            {
+              "start": [
+                18,
+                20
+              ],
+              "end": [
+                8,
+                20
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                8,
+                20
+              ],
+              "end": [
+                8,
+                0
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                8,
+                0
+              ],
+              "end": [
+                15,
+                0
+              ],
+              "material": "concrete"
+            }
+          ],
+          "label_pos": [
+            20.83380805121528,
+            3.9444442325168185
+          ]
         }
       ]
     },
