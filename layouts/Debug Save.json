@@ -1,5 +1,5 @@
 {
-  "name": "Overwrite Test",
+  "name": "Debug Save",
   "dimensions": {
     "width": 60,
     "depth": 40,
@@ -296,23 +296,34 @@
             },
             {
               "start": [
-                2,
-                6
-              ],
-              "end": [
-                35,
-                28
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
                 37,
                 11
               ],
               "end": [
                 34,
                 11
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                41,
+                21
+              ],
+              "end": [
+                45,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                20
+              ],
+              "end": [
+                41,
+                21
               ],
               "material": "concrete"
             }

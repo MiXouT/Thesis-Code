@@ -35,6 +35,16 @@ function init() {
     requestAnimationFrame(draw);
 }
 
+window.onerror = function (msg, url, line, col, error) {
+    const status = document.getElementById('status-msg');
+    if (status) {
+        status.innerText = `Error: ${msg}`;
+        status.style.color = 'red';
+    }
+    console.error(msg, url, line, col, error);
+    return false;
+};
+
 function resizeCanvas() {
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
@@ -50,9 +60,9 @@ async function loadLayout() {
             updateFloorList();
             updateStatus("Layout loaded");
         } else {
-            // Initialize default if empty
             addDefaultFloor();
         }
+        fetchLayoutList(); // Refresh list
     } catch (e) {
         console.error(e);
         updateStatus("Error loading layout");
@@ -69,20 +79,266 @@ function addDefaultFloor() {
     updateFloorList();
 }
 
+async function fetchLayoutList(selectedToKeep) {
+    try {
+        const res = await fetch('/api/layouts');
+        const files = await res.json();
+        const select = document.getElementById('layout-select');
+        select.innerHTML = '';
+        files.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f;
+            opt.innerText = f.replace('.json', '');
+            select.appendChild(opt);
+        });
+
+        if (selectedToKeep) {
+            select.value = selectedToKeep;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 async function saveLayout() {
     try {
         updateStatus("Saving...");
-        const res = await fetch('/api/save', {
+        const select = document.getElementById('layout-select');
+        const filename = select.value;
+
+        if (!filename) {
+            saveLayoutAs(); // Fallback if no file selected
+            return;
+        }
+
+        // Ensure internal name matches filename
+        layout.name = filename.replace('.json', '');
+
+        const res = await fetch('/api/save_as', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(layout)
+            body: JSON.stringify({
+                filename: filename,
+                data: layout
+            })
         });
         const data = await res.json();
         updateStatus(data.message);
+        fetchLayoutList(filename);
     } catch (e) {
         console.error(e);
         updateStatus("Error saving layout");
     }
+}
+
+let modalCallback = null;
+let deleteCallback = null;
+
+function showModal(title, placeholder, initialValue, callback) {
+    const modal = document.getElementById('custom-modal');
+    const titleEl = document.getElementById('modal-title');
+    const input = document.getElementById('modal-input');
+    const okBtn = document.getElementById('btn-modal-ok');
+
+    titleEl.innerText = title;
+    input.placeholder = placeholder;
+    input.value = initialValue || '';
+    okBtn.innerText = "Create"; // Default
+    if (title.includes("Rename")) okBtn.innerText = "Rename";
+    if (title.includes("Save")) okBtn.innerText = "Save";
+
+    modalCallback = callback;
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    input.focus();
+    input.select();
+
+    input.onkeydown = (e) => {
+        if (e.key === 'Enter') confirmModal();
+        if (e.key === 'Escape') closeModal();
+    };
+}
+
+function showConfirm(title, message, callback) {
+    const modal = document.getElementById('delete-modal');
+    const msgEl = document.getElementById('delete-message');
+
+    msgEl.innerText = message;
+    deleteCallback = callback;
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+}
+
+function closeModal() {
+    const modal = document.getElementById('custom-modal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    modalCallback = null;
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('delete-modal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    deleteCallback = null;
+}
+
+function confirmModal() {
+    const input = document.getElementById('modal-input');
+    const val = input.value;
+
+    try {
+        if (modalCallback) {
+            modalCallback(val);
+        }
+    } catch (e) {
+        console.error("Error in modal callback:", e);
+        alert("Error: " + e.message);
+    } finally {
+        closeModal();
+    }
+}
+
+function confirmDelete() {
+    try {
+        if (deleteCallback) {
+            deleteCallback();
+        }
+    } catch (e) {
+        console.error("Error in delete callback:", e);
+    } finally {
+        closeDeleteModal();
+    }
+}
+
+function createNewRoom() {
+    const floor = layout.floors[currentFloorIndex];
+    showModal("New Room Label", "Enter room name", `Room ${floor.rooms.length + 1}`, (name) => {
+        if (!name) return;
+        // Place at center of screen
+        const centerWorld = screenToWorld(canvas.width / 2, canvas.height / 2);
+
+        floor.rooms.push({
+            name: name,
+            walls: [],
+            label_pos: [centerWorld.x, centerWorld.y]
+        });
+        updateStatus(`Created label: ${name}. Drag to move.`);
+        draw();
+    });
+}
+
+function saveLayoutAs() {
+    showModal("Save Layout As", "Enter new filename", layout.name, async (filename) => {
+        if (!filename) return;
+        layout.name = filename; // Update internal name
+        try {
+            updateStatus("Saving as...");
+            const res = await fetch('/api/save_as', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    filename: filename,
+                    data: layout
+                })
+            });
+            const data = await res.json();
+            updateStatus(data.message);
+
+            // Add .json if missing for selection
+            let fileToSelect = filename;
+            if (!fileToSelect.endsWith('.json')) fileToSelect += '.json';
+
+            fetchLayoutList(fileToSelect);
+        } catch (e) {
+            console.error(e);
+            updateStatus("Error saving layout");
+        }
+    });
+}
+
+async function loadSelectedLayout() {
+    const select = document.getElementById('layout-select');
+    const filename = select.value;
+    if (!filename) return;
+
+    try {
+        updateStatus("Loading...");
+        const res = await fetch('/api/load', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: filename })
+        });
+        const data = await res.json();
+
+        if (data.floors) {
+            layout = data;
+            currentFloorIndex = 0;
+            selectedObject = null;
+            updateFloorList();
+            draw();
+            updateStatus("Layout loaded: " + filename);
+        } else {
+            updateStatus("Invalid layout file");
+        }
+    } catch (e) {
+        console.error(e);
+        updateStatus("Error loading layout");
+    }
+}
+
+async function renameSelectedLayout() {
+    const select = document.getElementById('layout-select');
+    const oldName = select.value;
+    if (!oldName) return;
+
+    showModal("Rename Layout", "Enter new name", oldName.replace('.json', ''), async (newName) => {
+        if (!newName) return;
+        try {
+            const res = await fetch('/api/rename', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    old_filename: oldName,
+                    new_filename: newName
+                })
+            });
+            const data = await res.json();
+            updateStatus(data.message);
+            fetchLayoutList(newName + ".json");
+        } catch (e) {
+            console.error(e);
+            updateStatus("Error renaming file");
+        }
+    });
+}
+
+async function deleteLayout() {
+    const select = document.getElementById('layout-select');
+    const filename = select.value;
+    if (!filename) return;
+
+    showConfirm("Delete Layout", `Are you sure you want to delete "${filename}"? This cannot be undone.`, async () => {
+        try {
+            const res = await fetch('/api/delete_layout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: filename })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                updateStatus(data.message);
+                fetchLayoutList(); // Refresh list
+            } else {
+                throw new Error(data.message || "Server error");
+            }
+        } catch (e) {
+            console.error(e);
+            updateStatus("Error: " + e.message);
+        }
+    });
 }
 
 // Coordinate Conversion
@@ -269,6 +525,7 @@ function getWallColor(material) {
 
 // Interaction
 function setupEvents() {
+    console.log("Setting up events...");
     // Tools
     document.getElementById('tool-select').onclick = () => setTool('select');
     document.getElementById('tool-wall').onclick = () => setTool('wall');
@@ -282,10 +539,20 @@ function setupEvents() {
     canvas.addEventListener('wheel', onWheel);
 
     // UI
-    document.getElementById('btn-save').onclick = saveLayout;
+    const btnSave = document.getElementById('btn-save');
+    if (btnSave) btnSave.onclick = saveLayout;
+
+    document.getElementById('btn-save-as').onclick = saveLayoutAs;
+    document.getElementById('btn-load-layout').onclick = loadSelectedLayout;
+    document.getElementById('btn-rename-layout').onclick = renameSelectedLayout;
+
+    const btnDelete = document.getElementById('btn-delete-layout');
+    if (btnDelete) btnDelete.onclick = deleteLayout;
+
     document.getElementById('btn-load').onclick = loadLayout;
     document.getElementById('btn-add-floor').onclick = addFloor;
     document.getElementById('btn-remove-floor').onclick = removeFloor;
+
     document.getElementById('grid-size').oninput = (e) => {
         gridSize = parseFloat(e.target.value);
         draw();
@@ -297,7 +564,11 @@ function setupEvents() {
 
     // Modal
     document.getElementById('btn-modal-cancel').onclick = closeModal;
-    document.getElementById('btn-modal-ok').onclick = confirmAddRoom;
+    document.getElementById('btn-modal-ok').onclick = confirmModal;
+
+    // Delete Modal
+    document.getElementById('btn-delete-cancel').onclick = closeDeleteModal;
+    document.getElementById('btn-delete-confirm').onclick = confirmDelete;
 }
 
 function setTool(tool) {
@@ -305,44 +576,6 @@ function setTool(tool) {
     document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`tool-${tool}`).classList.add('active');
     updateStatus(`Tool: ${tool}`);
-}
-
-function createNewRoom() {
-    const floor = layout.floors[currentFloorIndex];
-    const modal = document.getElementById('custom-modal');
-    const input = document.getElementById('modal-input');
-
-    input.value = `Room ${floor.rooms.length + 1}`;
-    modal.classList.remove('hidden');
-    input.focus();
-
-    // Handle Enter key
-    input.onkeydown = (e) => {
-        if (e.key === 'Enter') confirmAddRoom();
-        if (e.key === 'Escape') closeModal();
-    };
-}
-
-function closeModal() {
-    document.getElementById('custom-modal').classList.add('hidden');
-}
-
-function confirmAddRoom() {
-    const name = document.getElementById('modal-input').value;
-    if (name) {
-        const floor = layout.floors[currentFloorIndex];
-        // Place at center of screen
-        const centerWorld = screenToWorld(canvas.width / 2, canvas.height / 2);
-
-        floor.rooms.push({
-            name: name,
-            walls: [],
-            label_pos: [centerWorld.x, centerWorld.y]
-        });
-        updateStatus(`Created label: ${name}. Drag to move.`);
-        draw();
-    }
-    closeModal();
 }
 
 function onMouseDown(e) {
@@ -458,11 +691,12 @@ function onDoubleClick(e) {
     if (labelHit) {
         const floor = layout.floors[currentFloorIndex];
         const room = floor.rooms[labelHit.roomIndex];
-        const newName = prompt("Rename label:", room.name);
-        if (newName) {
+
+        showModal("Rename Label", "Enter new name", room.name, (newName) => {
             room.name = newName;
             updatePropertiesPanel();
-        }
+            draw();
+        });
     }
 }
 
@@ -605,10 +839,13 @@ function removeFloor() {
 }
 
 function updateStatus(msg) {
-    document.getElementById('status-msg').innerText = msg;
-    setTimeout(() => {
-        document.getElementById('status-msg').innerText = '';
-    }, 3000);
+    const status = document.getElementById('status-msg');
+    if (status) {
+        status.innerText = msg;
+        setTimeout(() => {
+            status.innerText = '';
+        }, 3000);
+    }
 }
 
 function updatePropertiesPanel() {

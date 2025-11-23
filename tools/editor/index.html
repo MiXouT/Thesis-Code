@@ -5,13 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IoT Layout Editor</title>
-    <link rel="stylesheet" href="style.css?v=neumorphic">
+    <link rel="stylesheet" href="style.css?v=multi_layout_13">
 </head>
 
 <body>
     <div class="container">
         <div class="sidebar">
             <h2>Layout Editor</h2>
+
+            <div class="section">
+                <h3>Layout Management</h3>
+                <div class="control-group">
+                    <label>Saved Layouts</label>
+                    <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                        <select id="layout-select" style="flex: 1;"></select>
+                        <button id="btn-delete-layout" type="button" class="action-btn icon-btn" title="Delete Layout"
+                            style="width: auto; padding: 8px; margin: 0; background: #a00;">🗑️</button>
+                    </div>
+                    <div class="button-grid">
+                        <button id="btn-load-layout" class="action-btn">Load</button>
+                        <button id="btn-rename-layout" class="action-btn">Rename</button>
+                        <button id="btn-save" class="action-btn primary">Save</button>
+                        <button id="btn-save-as" class="action-btn">Save As...</button>
+                    </div>
+                </div>
+            </div>
 
             <div class="section">
                 <h3>Tools</h3>
@@ -41,7 +59,6 @@
             </div>
 
             <div class="section bottom">
-                <button id="btn-save" class="action-btn primary">Save Layout</button>
                 <button id="btn-load" class="action-btn secondary">Reload</button>
                 <div id="status-msg"></div>
             </div>
@@ -60,15 +77,27 @@
     </div>
     <div id="custom-modal" class="modal hidden">
         <div class="modal-content">
-            <h3>New Room Label</h3>
-            <input type="text" id="modal-input" placeholder="Enter room name">
+            <h3 id="modal-title">Input</h3>
+            <p id="modal-message" class="hidden"></p>
+            <input type="text" id="modal-input" placeholder="Enter value">
             <div class="modal-actions">
                 <button id="btn-modal-cancel" class="tool-btn">Cancel</button>
                 <button id="btn-modal-ok" class="tool-btn active">Create</button>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <div id="delete-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="color: #a00;">Delete Layout</h3>
+            <p id="delete-message" style="margin: 20px 0; color: #e0e5ec;">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="btn-delete-cancel" class="tool-btn">Cancel</button>
+                <button id="btn-delete-confirm" class="tool-btn" style="background: #a00; color: white;">Delete</button>
+            </div>
+        </div>
+    </div>
+    <script src="script_v13.js" defer></script>
 </body>
 
 </html>
