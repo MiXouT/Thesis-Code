@@ -27,9 +27,20 @@ def generate_grid_points(building, spacing=2.0, height_offset=1.5):
     x_range = np.arange(1, 59, spacing)
     y_range = np.arange(1, 39, spacing)
 
-    # Generate for each floor (3 floors, 7m each)
-    # Offsets: 2.5, 9.5, 16.5 (assuming 2.5m working height relative to floor base)
-    floors_z = [2.5, 9.5, 16.5]
+    # Dynamic Z generation based on building floors
+    unique_floors = {}
+    for room in building.rooms:
+        if not room.walls:
+            continue
+
+        # Get the base Z of the floor this room is on
+        min_z = room.bounds()[2]
+        if room.floor_level not in unique_floors:
+            unique_floors[room.floor_level] = min_z
+
+    floors_z = []
+    for level, base_z in unique_floors.items():
+        floors_z.append(base_z + height_offset)
 
     for z in floors_z:
         for x in x_range:

@@ -56,17 +56,21 @@ class Room:
 
         all_x = []
         all_y = []
+        all_z_min = []
+        all_z_max = []
         for w in self.walls:
             all_x.extend([w.start.x, w.end.x])
             all_y.extend([w.start.y, w.end.y])
+            all_z_min.extend([w.start.z, w.end.z])
+            all_z_max.extend([w.start.z + w.height, w.end.z + w.height])
 
         return (
             min(all_x),
             min(all_y),
-            self.floor_level * self.height,
+            min(all_z_min),
             max(all_x),
             max(all_y),
-            (self.floor_level + 1) * self.height,
+            max(all_z_max),
         )
 
 
