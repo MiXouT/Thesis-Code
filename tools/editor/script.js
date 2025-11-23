@@ -285,6 +285,7 @@ function setupEvents() {
     document.getElementById('btn-save').onclick = saveLayout;
     document.getElementById('btn-load').onclick = loadLayout;
     document.getElementById('btn-add-floor').onclick = addFloor;
+    document.getElementById('btn-remove-floor').onclick = removeFloor;
     document.getElementById('grid-size').oninput = (e) => {
         gridSize = parseFloat(e.target.value);
         draw();
@@ -559,7 +560,10 @@ function updateFloorList() {
         div.innerText = `Floor ${f.level} (${f.height}m)`;
         div.onclick = () => {
             currentFloorIndex = idx;
+            selectedObject = null;
             updateFloorList();
+            updatePropertiesPanel();
+            draw();
         };
         list.appendChild(div);
     });
@@ -572,7 +576,32 @@ function addFloor() {
         height: 3.0,
         rooms: []
     });
+    currentFloorIndex = layout.floors.length - 1;
     updateFloorList();
+    draw();
+}
+
+function removeFloor() {
+    if (layout.floors.length <= 1) {
+        alert("Cannot remove the last floor!");
+        return;
+    }
+
+    // Remove the current floor
+    layout.floors.splice(currentFloorIndex, 1);
+
+    // Adjust levels of remaining floors
+    layout.floors.forEach((f, idx) => {
+        f.level = idx;
+    });
+
+    // Update index
+    if (currentFloorIndex >= layout.floors.length) {
+        currentFloorIndex = layout.floors.length - 1;
+    }
+
+    updateFloorList();
+    draw();
 }
 
 function updateStatus(msg) {
@@ -585,7 +614,22 @@ function updateStatus(msg) {
 function updatePropertiesPanel() {
     const panel = document.getElementById('properties-panel');
     if (!selectedObject) {
-        panel.innerHTML = '<p class="hint">Select an object to edit properties</p>';
+        // Show Floor Properties
+        const floor = layout.floors[currentFloorIndex];
+        panel.innerHTML = `
+            <div class="prop-row">
+                <label>Floor Height (m)</label>
+                <input type="number" id="prop-floor-height" value="${floor.height}" step="0.1" min="2.0">
+            </div>
+            <p class="hint" style="margin-top:10px; font-size:0.8em">Select a wall or label to edit its properties.</p>
+        `;
+
+        document.getElementById('prop-floor-height').onchange = (e) => {
+            let val = parseFloat(e.target.value);
+            if (val < 2.0) val = 2.0; // Minimum height constraint
+            floor.height = val;
+            updateFloorList(); // Update the list to show new height
+        };
         return;
     }
 

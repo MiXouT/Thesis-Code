@@ -119,10 +119,17 @@ class Building:
 
         building = Building(data["name"])
 
-        for floor_data in data["floors"]:
+        # Sort floors by level to ensure correct stacking
+        floors_data = sorted(data["floors"], key=lambda x: x["level"])
+        current_z = 0.0
+
+        for floor_data in floors_data:
             floor_level = floor_data["level"]
             floor_height = floor_data["height"]
-            z_base = floor_level * floor_height
+            z_base = current_z
+
+            # Update current_z for the next floor
+            current_z += floor_height
 
             for room_data in floor_data["rooms"]:
                 room = Room(
