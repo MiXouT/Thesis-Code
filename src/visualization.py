@@ -115,7 +115,7 @@ class Visualizer:
                     colorscale="Viridis",
                     cmin=RX_SENSITIVITY_DBM - 10,
                     cmax=TX_POWER_DBM - 40,
-                    colorbar=dict(title="Signal (dBm)"),
+                    colorbar=dict(title="Signal (dBm)", x=1.1, y=0.5, len=0.8),
                     opacity=0.8,
                 ),
                 text=[f"Signal: {s:.1f} dBm" for s in signals],
@@ -124,7 +124,12 @@ class Visualizer:
         )
 
         fig = go.Figure(data=traces)
-        fig.update_layout(title=title, scene=dict(aspectmode="data"))
+        fig.update_layout(
+            title=title,
+            scene=dict(aspectmode="data"),
+            legend=dict(x=0, y=1),
+            margin=dict(r=100),
+        )
         return fig
 
     def plot_pareto_front(self, res):
