@@ -11,19 +11,19 @@
       "height": 4,
       "rooms": [
         {
-          "name": "Zone A_F0",
+          "name": "Zone",
           "walls": []
         },
         {
-          "name": "Zone B_F0",
+          "name": "Zone",
           "walls": []
         },
         {
-          "name": "Zone C_F0",
+          "name": "Zone",
           "walls": []
         },
         {
-          "name": "Zone D_F0",
+          "name": "Zone",
           "walls": [
             {
               "start": [
@@ -307,19 +307,19 @@
       "height": 4,
       "rooms": [
         {
-          "name": "Zone A_F1",
+          "name": "Zone",
           "walls": []
         },
         {
-          "name": "Zone B_F1",
+          "name": "Zone",
           "walls": []
         },
         {
-          "name": "Zone C_F1",
+          "name": "Zone",
           "walls": []
         },
         {
-          "name": "Zone D_F1",
+          "name": "Zone",
           "walls": [
             {
               "start": [
