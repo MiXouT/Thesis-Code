@@ -82,41 +82,50 @@ def main():
 
     # 5. Analyze Results
     # Get best solution (Trade-off)
-    # Let's pick the solution with max coverage
     F = res.F
-    # F[:, 0] is Uncovered Sensors (Min), F[:, 1] is Num Routers (Min)
+    # F[:, 0] is Uncovered Sensors (Min)
+    # F[:, 1] is Total Power (Min)
+    # F[:, 2] is Interference (Min)
 
-    # Find solution with max coverage (min uncovered)
-    best_idx = np.argmin(F[:, 0])
+    # Find solution with max coverage (min uncovered), then min power
+    # Sort by Uncovered (asc), then Power (asc)
+    sorted_indices = np.lexsort((F[:, 1], F[:, 0]))
+    best_idx = sorted_indices[0]
+
     best_solution = res.X[best_idx]
-    best_uncovered = F[best_idx, 0]
-    best_routers = F[best_idx, 1]
+    best_objectives = res.F[best_idx]
+
+    # Ensure best_solution is integer for visualization
+    best_solution = np.round(best_solution).astype(int)
+
+    active_routers = np.sum(best_solution > 0)
+    best_uncovered = best_objectives[0]
+    best_power = best_objectives[1]
+    best_interference = best_objectives[2]
 
     print(
-        f"\nBest AI Solution: {int(best_routers)} Routers, {best_uncovered} Uncovered Sensors"
+        f"\nBest AI Solution: {active_routers} Routers, {best_uncovered} Uncovered, {best_power:.2f} Watts, {best_interference} Interfered"
     )
-
-    # 6. Run Baselines
-    print("\n--- Baseline Comparison ---")
-    baseline.run_random_baseline(loss_matrix, int(best_routers))
-    baseline.run_grid_baseline(loss_matrix, candidates, int(best_routers))
+    # print("\n--- Baseline Comparison ---")
+    # baseline.run_random_baseline(loss_matrix, int(best_routers))
+    # baseline.run_grid_baseline(loss_matrix, candidates, int(best_routers))
 
     # 7. Visualize
     viz = Visualizer(building)
 
-    # Plot Pareto Front
+    # Plot Pareto Front (3D/Multi-plot)
     fig_pareto = viz.plot_pareto_front(res)
     fig_pareto.write_html("pareto_front.html")
     print("Saved pareto_front.html")
 
     # Plot Best Solution
-    active_indices = np.where(best_solution)[0]
+    # Pass the full integer genome
     fig_sol = viz.plot_solution(
         candidates,
-        active_indices,
+        best_solution,
         sensors,
         loss_matrix,
-        title=f"Best AI Solution ({int(best_routers)} Routers)",
+        title=f"Best AI Solution ({active_routers} Routers, {best_power:.2f}W)",
     )
     fig_sol.write_html("solution_map.html")
     print("Saved solution_map.html")

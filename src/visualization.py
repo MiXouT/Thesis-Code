@@ -1,7 +1,8 @@
 import plotly.graph_objects as go
 import numpy as np
+from plotly.subplots import make_subplots
 from .environment import Building, Point
-from .config import RX_SENSITIVITY_DBM, TX_POWER_DBM
+from .config import RX_SENSITIVITY_DBM, TX_POWER_LEVELS
 
 
 class Visualizer:
@@ -50,18 +51,21 @@ class Visualizer:
     def plot_solution(
         self,
         candidates: list[Point],
-        active_indices: list[int],
+        solution_genome: np.ndarray,
         sensors: list[Point],
         loss_matrix: np.ndarray,
         title="Router Placement",
     ):
+        # solution_genome is int array (0-4)
+        active_indices = np.where(solution_genome > 0)[0]
 
         traces = self._get_building_traces()
 
         # 1. Plot Inactive Candidates (Small Grey Dots)
-        cand_x = [p.x for i, p in enumerate(candidates) if i not in active_indices]
-        cand_y = [p.y for i, p in enumerate(candidates) if i not in active_indices]
-        cand_z = [p.z for i, p in enumerate(candidates) if i not in active_indices]
+        inactive_indices = np.where(solution_genome == 0)[0]
+        cand_x = [candidates[i].x for i in inactive_indices]
+        cand_y = [candidates[i].y for i in inactive_indices]
+        cand_z = [candidates[i].z for i in inactive_indices]
 
         traces.append(
             go.Scatter3d(
@@ -69,35 +73,52 @@ class Visualizer:
                 y=cand_y,
                 z=cand_z,
                 mode="markers",
-                marker=dict(size=3, color="gray", opacity=0.5),
+                marker=dict(size=3, color="gray", opacity=0.3),
                 name="Candidate Locations",
             )
         )
 
-        # 2. Plot Active Routers (Large Red Stars)
-        active_x = [candidates[i].x for i in active_indices]
-        active_y = [candidates[i].y for i in active_indices]
-        active_z = [candidates[i].z for i in active_indices]
+        # 2. Plot Active Routers (Colored by Power Level)
+        # Map levels to colors/sizes
+        # 1: Low (Blue), 2: Med (Green), 3: High (Orange), 4: Max (Red)
+        colors = {1: "blue", 2: "green", 3: "orange", 4: "red"}
+        sizes = {1: 6, 2: 8, 3: 10, 4: 12}
+        names = {1: "Low (3mW)", 2: "Med (15mW)", 3: "High (40mW)", 4: "Max (100mW)"}
 
-        traces.append(
-            go.Scatter3d(
-                x=active_x,
-                y=active_y,
-                z=active_z,
-                mode="markers",
-                marker=dict(size=8, color="red", symbol="diamond"),
-                name="Active Routers",
+        for lvl in range(1, 5):
+            indices = np.where(solution_genome == lvl)[0]
+            if len(indices) == 0:
+                continue
+
+            rx = [candidates[i].x for i in indices]
+            ry = [candidates[i].y for i in indices]
+            rz = [candidates[i].z for i in indices]
+
+            traces.append(
+                go.Scatter3d(
+                    x=rx,
+                    y=ry,
+                    z=rz,
+                    mode="markers",
+                    marker=dict(size=sizes[lvl], color=colors[lvl], symbol="diamond"),
+                    name=f"Router {names[lvl]}",
+                )
             )
-        )
 
         # 3. Plot Sensors (Heatmap of Signal Strength)
-        # Calculate max signal for each sensor
         if len(active_indices) > 0:
             active_losses = loss_matrix[active_indices, :]
-            min_losses = np.min(active_losses, axis=0)
-            signals = TX_POWER_DBM - min_losses
+            # Get Tx Power for each active router
+            tx_powers = np.array(
+                [TX_POWER_LEVELS[solution_genome[i]] for i in active_indices]
+            )
+            # Calculate signal from each router to each sensor
+            # (n_active, 1) - (n_active, n_sensors)
+            signals_matrix = tx_powers[:, np.newaxis] - active_losses
+            # Max signal at each sensor
+            max_signals = np.max(signals_matrix, axis=0)
         else:
-            signals = np.full(len(sensors), -120.0)
+            max_signals = np.full(len(sensors), -120.0)
 
         sens_x = [p.x for p in sensors]
         sens_y = [p.y for p in sensors]
@@ -111,14 +132,14 @@ class Visualizer:
                 mode="markers",
                 marker=dict(
                     size=4,
-                    color=signals,
+                    color=max_signals,
                     colorscale="Viridis",
                     cmin=RX_SENSITIVITY_DBM - 10,
-                    cmax=TX_POWER_DBM - 40,
+                    cmax=-40,  # Cap at reasonable max
                     colorbar=dict(title="Signal (dBm)", x=1.1, y=0.5, len=0.8),
                     opacity=0.8,
                 ),
-                text=[f"Signal: {s:.1f} dBm" for s in signals],
+                text=[f"Signal: {s:.1f} dBm" for s in max_signals],
                 name="Signal Coverage",
             )
         )
@@ -134,24 +155,76 @@ class Visualizer:
 
     def plot_pareto_front(self, res):
         """
-        Plots Objective 1 (Uncovered Sensors) vs Objective 2 (Num Routers)
+        Plots 3 2D projections of the 3-Objective Pareto Front
+        Obj 1: Uncovered Sensors (Min)
+        Obj 2: Total Power (Min)
+        Obj 3: Interference (Min)
         """
         F = res.F
 
-        fig = go.Figure(
-            data=[
-                go.Scatter(
-                    x=F[:, 1],  # Num Routers
-                    y=F[:, 0],  # Uncovered Sensors
-                    mode="markers",
-                    marker=dict(size=10, color="blue"),
-                )
-            ]
+        # Create subplots
+        fig = make_subplots(
+            rows=1,
+            cols=3,
+            subplot_titles=(
+                "Coverage vs Energy",
+                "Energy vs Interference",
+                "Coverage vs Interference",
+            ),
+        )
+
+        # 1. Coverage vs Energy (Uncovered vs Watts)
+        fig.add_trace(
+            go.Scatter(
+                x=F[:, 1],  # Watts
+                y=F[:, 0],  # Uncovered
+                mode="markers",
+                marker=dict(color="blue", size=8),
+                text=[f"I: {i}" for i in F[:, 2]],
+                name="Cov vs Pwr",
+            ),
+            row=1,
+            col=1,
+        )
+
+        # 2. Energy vs Interference (Watts vs Count)
+        fig.add_trace(
+            go.Scatter(
+                x=F[:, 1],  # Watts
+                y=F[:, 2],  # Interference
+                mode="markers",
+                marker=dict(color="green", size=8),
+                name="Pwr vs Int",
+            ),
+            row=1,
+            col=2,
+        )
+
+        # 3. Coverage vs Interference (Uncovered vs Count)
+        fig.add_trace(
+            go.Scatter(
+                x=F[:, 0],  # Uncovered
+                y=F[:, 2],  # Interference
+                mode="markers",
+                marker=dict(color="red", size=8),
+                name="Cov vs Int",
+            ),
+            row=1,
+            col=3,
         )
 
         fig.update_layout(
-            title="Pareto Front: Coverage vs Energy",
-            xaxis_title="Number of Routers (Energy)",
-            yaxis_title="Uncovered Sensors (Inverse Coverage)",
+            title="Multi-Objective Pareto Front Analysis", showlegend=False
         )
+
+        # Update axes labels
+        fig.update_xaxes(title_text="Total Power (Watts)", row=1, col=1)
+        fig.update_yaxes(title_text="Uncovered Sensors", row=1, col=1)
+
+        fig.update_xaxes(title_text="Total Power (Watts)", row=1, col=2)
+        fig.update_yaxes(title_text="Interference Count", row=1, col=2)
+
+        fig.update_xaxes(title_text="Uncovered Sensors", row=1, col=3)
+        fig.update_yaxes(title_text="Interference Count", row=1, col=3)
+
         return fig

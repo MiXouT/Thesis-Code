@@ -1,5 +1,5 @@
 {
-  "name": "Debug Save",
+  "name": "House_Big2",
   "dimensions": {
     "width": 60,
     "depth": 40,
@@ -302,39 +302,6 @@
               "end": [
                 34,
                 11
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                41,
-                21
-              ],
-              "end": [
-                45,
-                8
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                41,
-                21
-              ],
-              "end": [
-                8,
-                21
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                8,
-                21
-              ],
-              "end": [
-                0,
-                0
               ],
               "material": "concrete"
             }
@@ -640,76 +607,6 @@
               ],
               "material": "concrete"
             }
-          ]
-        }
-      ]
-    },
-    {
-      "level": 2,
-      "height": 4,
-      "rooms": [
-        {
-          "name": "Room 1",
-          "walls": [
-            {
-              "start": [
-                4,
-                0
-              ],
-              "end": [
-                38,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                38,
-                0
-              ],
-              "end": [
-                20,
-                21
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                20,
-                21
-              ],
-              "end": [
-                4,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                11,
-                9
-              ],
-              "end": [
-                30,
-                9
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                20,
-                0
-              ],
-              "end": [
-                20,
-                21
-              ],
-              "material": "concrete"
-            }
-          ],
-          "label_pos": [
-            39.44444444444444,
-            20.77777777777778
           ]
         }
       ]

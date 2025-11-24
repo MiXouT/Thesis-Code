@@ -3,7 +3,6 @@ from typing import List, Tuple
 from .environment import Building, Point, Wall
 from .config import (
     FREQUENCY_HZ,
-    TX_POWER_DBM,
     PATH_LOSS_EXPONENT,
     REFERENCE_DISTANCE,
     GRID_SIZE,

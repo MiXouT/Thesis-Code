@@ -1,9 +1,9 @@
 import numpy as np
 from pymoo.core.problem import ElementwiseProblem
 from pymoo.algorithms.moo.nsga2 import NSGA2
-from pymoo.operators.crossover.pntx import TwoPointCrossover
-from pymoo.operators.mutation.bitflip import BitflipMutation
-from pymoo.core.sampling import Sampling
+from pymoo.operators.crossover.sbx import SBX
+from pymoo.operators.mutation.pm import PM
+from pymoo.operators.sampling.rnd import IntegerRandomSampling
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
 
@@ -12,25 +12,35 @@ from .config import (
     POPULATION_SIZE,
     GENERATIONS,
     ROUTER_COUNT_MAX,
-    TX_POWER_DBM,
+    TX_POWER_LEVELS,
+    TX_POWER_WATTS,
+    ROUTER_BASE_LOAD_WATTS,
 )
 
 
-class SparseSampling(Sampling):
+class IntegerSampling(IntegerRandomSampling):
     def _do(self, problem, n_samples, **kwargs):
-        # Initialize with a low probability of being active
-        # Prob = ROUTER_COUNT_MAX / n_var
+        # Custom sampling to favor 0 (Off) but allow 1-4
+        # We want roughly ROUTER_COUNT_MAX active routers per individual
         n_var = problem.n_var
-        prob = min(ROUTER_COUNT_MAX / n_var, 0.5)
-        X = np.random.random((n_samples, n_var)) < prob
+        X = np.zeros((n_samples, n_var), dtype=int)
+
+        prob_active = min(ROUTER_COUNT_MAX / n_var, 0.5)
+
+        for i in range(n_samples):
+            # Decide which are active
+            active_mask = np.random.random(n_var) < prob_active
+            # Assign random power level 1-4 to active ones
+            X[i, active_mask] = np.random.randint(1, 5, size=np.sum(active_mask))
+
         return X
 
 
 class RouterPlacementProblem(ElementwiseProblem):
     def __init__(self, loss_matrix: np.ndarray, threshold: float = RX_SENSITIVITY_DBM):
         """
-        Binary optimization problem:
-        x[i] = 1 if router is placed at candidate i, 0 otherwise.
+        Integer optimization problem:
+        x[i] = 0 (Off), 1 (Low), 2 (Med), 3 (High), 4 (Max)
         """
         self.loss_matrix = loss_matrix  # (n_candidates, n_sensors)
         self.threshold = threshold
@@ -38,77 +48,84 @@ class RouterPlacementProblem(ElementwiseProblem):
 
         super().__init__(
             n_var=n_var,
-            n_obj=2,  # Obj1: Max Coverage, Obj2: Min Energy
+            n_obj=3,  # Obj1: Min Uncovered, Obj2: Min Total Power, Obj3: Min Interference
             n_ieq_constr=0,
             xl=0,
-            xu=1,
-            vtype=bool,
+            xu=4,
+            vtype=int,
         )
 
     def _evaluate(self, x, out, *args, **kwargs):
-        # x is a boolean array of shape (n_candidates,)
-        active_indices = np.where(x)[0]
+        # x is an integer array of shape (n_candidates,)
+        # 0 = Off, 1-4 = Power Levels
+        # Ensure x is integer (SBX might produce floats)
+        x = np.round(x).astype(int)
+
+        active_indices = np.where(x > 0)[0]
 
         if len(active_indices) == 0:
-            # No routers placed -> 0 coverage, 0 energy
-            # We want to maximize coverage (minimize negative)
-            # We want to minimize energy
-            out["F"] = [0, 0]  # Technically 0 coverage is bad, but 0 energy is good.
-            # To penalize "no routers", we can set coverage to a huge positive number (minimization)
-            # Total sensors
+            # No routers placed
             n_sensors = self.loss_matrix.shape[1]
-            out["F"] = [n_sensors, 0]
+            # Penalize heavily
+            out["F"] = [n_sensors, 0.0, 0.0]
             return
 
-        # Calculate Coverage
-        # Get sub-matrix for active routers
+        # 1. Calculate Signal Strength at each sensor from each active router
+        # Signal = TxPower - PathLoss
+
+        # Get losses for active routers only
         active_losses = self.loss_matrix[active_indices, :]  # (n_active, n_sensors)
 
-        # For each sensor, the received signal is the MAX signal from any active router
-        # Signal = TxPower - PathLoss.
-        # Since TxPower is constant, Max Signal <=> Min Path Loss.
-        # So we find min path loss for each sensor.
-        min_path_losses = np.min(active_losses, axis=0)
+        # Get Tx Power (dBm) for each active router
+        # x[active_indices] gives levels 1-4
+        # Map levels to dBm values
+        tx_powers_dbm = np.array([TX_POWER_LEVELS[lvl] for lvl in x[active_indices]])
 
-        # Check if signal > threshold
-        # Signal = 20 - Loss
-        # 20 - Loss >= -85  =>  Loss <= 105
-        # So we check if min_path_loss <= (TxPower - Threshold)
-        # Let's assume TxPower is handled outside or we just use loss directly.
-        # In config, TX_POWER_DBM = 20.
-        max_allowable_loss = TX_POWER_DBM - self.threshold
+        # Broadcast Tx Power to shape (n_active, n_sensors)
+        # (n_active, 1) - (n_active, n_sensors)
+        signals = tx_powers_dbm[:, np.newaxis] - active_losses
 
-        covered_sensors = np.sum(min_path_losses <= max_allowable_loss)
-        total_sensors = self.loss_matrix.shape[1]
-        uncovered_sensors = total_sensors - covered_sensors
+        # 2. Coverage (Obj 1)
+        # Sensor is covered if MAX signal >= threshold
+        max_signals = np.max(signals, axis=0)
+        covered_mask = max_signals >= self.threshold
+        uncovered_sensors = np.sum(~covered_mask)
 
-        # Objectives (Minimize both)
-        # f1: Minimize Uncovered Sensors (Maximize Coverage)
-        # f2: Minimize Number of Routers (Energy)
+        # 3. Total Power Consumption (Obj 2)
+        # Power = Base Load + Radio Power for each active router
+        # Map levels to Watts
+        radio_watts = np.array([TX_POWER_WATTS[lvl] for lvl in x[active_indices]])
+        total_watts = np.sum(ROUTER_BASE_LOAD_WATTS + radio_watts)
 
-        f1 = uncovered_sensors
-        f2 = len(active_indices)
+        # 4. Interference (Obj 3)
+        # Count sensors that hear > 1 router above threshold
+        # We already have 'signals' matrix
+        strong_signals_count = np.sum(signals >= self.threshold, axis=0)
+        # Interference = number of sensors with count > 1
+        interfered_sensors = np.sum(strong_signals_count > 1)
 
-        out["F"] = [f1, f2]
+        out["F"] = [uncovered_sensors, total_watts, interfered_sensors]
 
 
 class Optimizer:
     def __init__(self, loss_matrix: np.ndarray):
-        self.loss_matrix = loss_matrix
         self.problem = RouterPlacementProblem(loss_matrix)
 
         self.algorithm = NSGA2(
             pop_size=POPULATION_SIZE,
-            sampling=SparseSampling(),
-            crossover=TwoPointCrossover(),
-            mutation=BitflipMutation(),
+            sampling=IntegerSampling(),
+            crossover=SBX(prob=0.9, eta=15, vtype=float, repair=None),
+            mutation=PM(
+                prob=1.0 / loss_matrix.shape[0], eta=20, vtype=float, repair=None
+            ),
             eliminate_duplicates=True,
         )
 
         self.termination = get_termination("n_gen", GENERATIONS)
 
     def run(self):
-        print("Starting Optimization (NSGA-II)...")
+        print("Starting Optimization (NSGA-II) with Variable Power...")
+        print("Objectives: [Min Uncovered, Min Watts, Min Interference]")
         res = minimize(
             self.problem,
             self.algorithm,

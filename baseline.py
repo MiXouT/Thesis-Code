@@ -2,7 +2,7 @@ import numpy as np
 import random
 from src.environment import Building, Room, Point
 from src.physics import LossMatrix
-from src.config import RX_SENSITIVITY_DBM, TX_POWER_DBM
+from src.config import RX_SENSITIVITY_DBM, TX_POWER_LEVELS
 
 
 def evaluate_placement(active_indices, loss_matrix, threshold=RX_SENSITIVITY_DBM):
@@ -11,7 +11,8 @@ def evaluate_placement(active_indices, loss_matrix, threshold=RX_SENSITIVITY_DBM
 
     active_losses = loss_matrix[active_indices, :]
     min_losses = np.min(active_losses, axis=0)
-    max_allowable_loss = TX_POWER_DBM - threshold
+    # Assume Max Power (Level 4) for baseline comparisons
+    max_allowable_loss = TX_POWER_LEVELS[4] - threshold
 
     covered_sensors = np.sum(min_losses <= max_allowable_loss)
     total_sensors = loss_matrix.shape[1]
