@@ -1,5 +1,5 @@
 {
-  "name": "House_Big2",
+  "name": "APU Campus Block D",
   "dimensions": {
     "width": 60,
     "depth": 40,
@@ -11,116 +11,170 @@
       "height": 4,
       "rooms": [
         {
-          "name": "Zone",
-          "walls": []
-        },
-        {
-          "name": "Zone",
-          "walls": []
-        },
-        {
-          "name": "Zone",
-          "walls": []
-        },
-        {
-          "name": "Zone",
+          "name": "Block D",
           "walls": [
             {
               "start": [
-                37,
-                8
+                31,
+                21
               ],
               "end": [
-                37,
+                31,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                21
+              ],
+              "end": [
+                22,
+                21
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                22,
+                21
+              ],
+              "end": [
+                22,
+                17
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                22,
+                17
+              ],
+              "end": [
+                29,
+                17
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                21
+              ],
+              "end": [
+                29,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                16
+              ],
+              "end": [
+                29,
                 14
               ],
               "material": "concrete"
             },
             {
               "start": [
-                37,
+                29,
                 14
               ],
               "end": [
-                34,
+                22,
                 14
               ],
               "material": "concrete"
             },
             {
               "start": [
-                30,
-                0
+                22,
+                14
               ],
               "end": [
-                30,
-                6
+                22,
+                17
               ],
               "material": "concrete"
             },
             {
               "start": [
-                30,
-                6
+                31,
+                17
               ],
               "end": [
-                27,
-                6
+                32,
+                17
               ],
               "material": "concrete"
             },
             {
               "start": [
-                30,
-                0
+                32,
+                17
               ],
               "end": [
-                27,
-                0
+                32,
+                15
               ],
               "material": "concrete"
             },
             {
               "start": [
-                27,
-                0
+                32,
+                15
               ],
               "end": [
-                27,
-                4
+                33,
+                15
               ],
               "material": "concrete"
             },
             {
               "start": [
-                27,
-                8
+                33,
+                16
               ],
               "end": [
-                15,
-                8
+                33,
+                18
               ],
               "material": "concrete"
             },
             {
               "start": [
-                15,
-                8
+                31,
+                18
               ],
               "end": [
-                15,
-                0
+                33,
+                18
               ],
               "material": "concrete"
             },
             {
               "start": [
-                15,
-                0
+                32,
+                15
               ],
               "end": [
-                27,
-                0
+                32,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                32,
+                14
+              ],
+              "end": [
+                33,
+                14
               ],
               "material": "concrete"
             },
@@ -130,450 +184,433 @@
                 14
               ],
               "end": [
-                15,
-                14
+                33,
+                12
               ],
               "material": "concrete"
             },
             {
               "start": [
-                27,
-                10
+                33,
+                12
               ],
               "end": [
-                15,
-                10
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                15,
-                10
-              ],
-              "end": [
-                15,
-                14
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                18,
-                14
-              ],
-              "end": [
-                18,
-                11
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                18,
-                11
-              ],
-              "end": [
-                20,
-                11
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                45,
-                0
-              ],
-              "end": [
-                45,
-                8
+                30,
+                12
               ],
               "material": "concrete"
             },
             {
               "start": [
                 30,
-                0
-              ],
-              "end": [
-                45,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                45,
-                8
-              ],
-              "end": [
-                37,
-                8
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                37,
-                14
-              ],
-              "end": [
-                37,
-                20
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                37,
-                20
-              ],
-              "end": [
-                18,
-                20
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                18,
-                20
-              ],
-              "end": [
-                18,
-                14
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                15,
-                8
-              ],
-              "end": [
-                15,
-                10
-              ],
-              "material": "concrete"
-            }
-          ]
-        },
-        {
-          "name": "Room 5",
-          "walls": [
-            {
-              "start": [
-                37,
-                11
-              ],
-              "end": [
-                34,
-                11
-              ],
-              "material": "concrete"
-            }
-          ],
-          "label_pos": [
-            20.83380805121528,
-            3.9444442325168185
-          ]
-        }
-      ]
-    },
-    {
-      "level": 1,
-      "height": 4,
-      "rooms": [
-        {
-          "name": "Zone",
-          "walls": []
-        },
-        {
-          "name": "Zone",
-          "walls": []
-        },
-        {
-          "name": "Zone",
-          "walls": []
-        },
-        {
-          "name": "Zone",
-          "walls": [
-            {
-              "start": [
-                27,
-                10
-              ],
-              "end": [
-                27,
-                4
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                27,
-                0
-              ],
-              "end": [
-                16,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                27,
-                10
-              ],
-              "end": [
-                16,
-                10
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                16,
-                10
-              ],
-              "end": [
-                16,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                27,
-                0
-              ],
-              "end": [
-                29,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                29,
-                0
-              ],
-              "end": [
-                29,
-                3
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                29,
-                3
-              ],
-              "end": [
-                27,
-                3
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                27,
-                0
-              ],
-              "end": [
-                27,
-                2
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                27,
                 12
               ],
               "end": [
-                27,
-                14
+                29,
+                11
               ],
               "material": "concrete"
             },
             {
               "start": [
-                27,
-                14
-              ],
-              "end": [
-                21,
-                14
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                21,
-                14
-              ],
-              "end": [
-                21,
-                18
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                31,
-                14
-              ],
-              "end": [
-                35,
-                14
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                35,
-                14
-              ],
-              "end": [
-                35,
-                18
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                35,
-                14
-              ],
-              "end": [
-                35,
-                8
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                35,
-                8
-              ],
-              "end": [
-                46,
-                8
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                46,
-                8
-              ],
-              "end": [
-                46,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                46,
-                0
+                29,
+                11
               ],
               "end": [
                 29,
-                0
+                8
               ],
               "material": "concrete"
             },
             {
               "start": [
-                36,
-                0
+                29,
+                8
               ],
               "end": [
-                36,
+                34,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                14
+              ],
+              "end": [
+                29,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                13
+              ],
+              "end": [
+                27,
+                11
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                11
+              ],
+              "end": [
+                27,
                 6
               ],
               "material": "concrete"
             },
             {
               "start": [
-                35,
-                18
+                27,
+                6
               ],
               "end": [
-                31,
-                18
+                34,
+                6
               ],
               "material": "concrete"
             },
             {
               "start": [
-                27,
-                10
+                33,
+                12
               ],
               "end": [
-                27,
+                35,
                 12
               ],
               "material": "concrete"
             },
             {
               "start": [
-                27,
-                15
+                35,
+                12
               ],
               "end": [
-                27,
-                18
+                35,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                8
+              ],
+              "end": [
+                34,
+                8
               ],
               "material": "concrete"
             },
             {
               "start": [
                 27,
+                11
+              ],
+              "end": [
+                22,
+                11
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                22,
+                11
+              ],
+              "end": [
+                22,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                27,
+                8
+              ],
+              "end": [
+                22,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                22,
+                8
+              ],
+              "end": [
+                22,
+                11
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                22,
+                8
+              ],
+              "end": [
+                22,
+                6
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                22,
+                6
+              ],
+              "end": [
+                27,
+                6
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                28,
+                6
+              ],
+              "end": [
+                28,
+                4
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                28,
+                4
+              ],
+              "end": [
+                22,
+                4
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                22,
+                4
+              ],
+              "end": [
+                22,
+                6
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                28,
+                4
+              ],
+              "end": [
+                34,
+                4
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                34,
+                4
+              ],
+              "end": [
+                34,
+                6
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                33,
                 18
               ],
               "end": [
+                37,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                18
+              ],
+              "end": [
+                37,
+                16
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                16
+              ],
+              "end": [
+                34,
+                16
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                34,
+                16
+              ],
+              "end": [
+                34,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                34,
+                15
+              ],
+              "end": [
+                37,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                15
+              ],
+              "end": [
+                37,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                13
+              ],
+              "end": [
+                33,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
                 31,
+                21
+              ],
+              "end": [
+                37,
+                21
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                21
+              ],
+              "end": [
+                37,
                 18
               ],
               "material": "concrete"
             },
             {
               "start": [
-                31,
-                18
+                35,
+                12
               ],
               "end": [
-                31,
-                15
+                37,
+                12
               ],
               "material": "concrete"
             },
             {
               "start": [
-                27,
-                15
+                37,
+                12
               ],
               "end": [
-                30,
-                15
+                37,
+                8
               ],
               "material": "concrete"
             },
             {
               "start": [
-                21,
-                18
+                37,
+                8
               ],
               "end": [
-                27,
-                18
+                35,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                4
+              ],
+              "end": [
+                36,
+                8
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                8
+              ],
+              "end": [
+                37,
+                4
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                4
+              ],
+              "end": [
+                35,
+                4
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                34,
+                4
+              ],
+              "end": [
+                35,
+                4
               ],
               "material": "concrete"
             }
+          ],
+          "label_pos": [
+            37.1,
+            23.45
           ]
         }
       ]
