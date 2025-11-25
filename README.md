@@ -87,5 +87,8 @@ You can customize the simulation settings in two ways:
 ## Results
 
 After running the simulation, open the generated HTML files in your browser:
+```bash
+Start-Process pareto_front.html; Start-Process solution_map.html
+```
 -   **`pareto_front.html`**: Interactive scatter plot showing the trade-offs between objectives.
 -   **`solution_map.html`**: 3D visualization of the best found router placements.
