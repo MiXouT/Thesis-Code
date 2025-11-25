@@ -8,7 +8,7 @@
   "floors": [
     {
       "level": 0,
-      "height": 4,
+      "height": 3,
       "rooms": [
         {
           "name": "Block D",

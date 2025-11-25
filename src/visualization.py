@@ -54,8 +54,12 @@ class Visualizer:
         solution_genome: np.ndarray,
         sensors: list[Point],
         loss_matrix: np.ndarray,
+        uncovered=None,
+        interfered=None,
         title="Router Placement",
     ):
+        if uncovered is not None and interfered is not None:
+            title += f" (Uncovered: {uncovered}, Interfered: {interfered})"
         # solution_genome is int array (0-4)
         active_indices = np.where(solution_genome > 0)[0]
 
@@ -205,6 +209,11 @@ class Visualizer:
                     marker=dict(color=color, symbol=symbol, size=6, opacity=0.5),
                     name=name,
                     legendgroup=name,
+                    text=[
+                        f"Uncovered: {u}<br>Power: {p:.2f} W<br>Interference: {i}"
+                        for u, p, i in zip(F_data[:, 0], F_data[:, 1], F_data[:, 2])
+                    ],
+                    hovertemplate="%{text}<extra></extra>",
                 ),
                 row=1,
                 col=1,
@@ -250,7 +259,11 @@ class Visualizer:
                 y=F[:, 0],  # Uncovered
                 mode="markers",
                 marker=dict(color="blue", size=8),
-                text=[f"I: {i}" for i in F[:, 2]],
+                text=[
+                    f"Uncovered: {u}<br>Power: {p:.2f} W<br>Interference: {i}"
+                    for u, p, i in zip(F[:, 0], F[:, 1], F[:, 2])
+                ],
+                hovertemplate="%{text}<extra></extra>",
                 name="AI (NSGA-II)",
                 legendgroup="AI",
             ),

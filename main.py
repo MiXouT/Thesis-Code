@@ -164,6 +164,8 @@ def main():
         best_solution,
         sensors,
         loss_matrix,
+        uncovered=best_uncovered,
+        interfered=best_interference,
         title=f"Best Solution ({active_routers} Routers, {best_power:.2f}W) <br> {meta_title}",
     )
     fig_sol.write_html("solution_map.html")
