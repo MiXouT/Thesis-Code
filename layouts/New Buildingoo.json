@@ -1,0 +1,139 @@
+{
+  "name": "New Buildingoo",
+  "dimensions": {
+    "width": 60,
+    "depth": 40,
+    "height": 21
+  },
+  "floors": [
+    {
+      "level": 0,
+      "height": 10,
+      "rooms": [
+        {
+          "name": "Room 1",
+          "walls": [
+            {
+              "start": [
+                34,
+                20
+              ],
+              "end": [
+                45,
+                27
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                45,
+                27
+              ],
+              "end": [
+                30,
+                29
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                29,
+                29
+              ],
+              "end": [
+                34,
+                20
+              ],
+              "material": "concrete"
+            }
+          ],
+          "label_pos": [
+            37.1,
+            23.45
+          ]
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "height": 10,
+      "rooms": [
+        {
+          "name": "Room 1",
+          "walls": [
+            {
+              "start": [
+                35,
+                21
+              ],
+              "end": [
+                35,
+                28
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                21
+              ],
+              "end": [
+                50,
+                21
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                50,
+                21
+              ],
+              "end": [
+                49,
+                29
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                29
+              ],
+              "end": [
+                35,
+                27
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                25
+              ],
+              "end": [
+                49,
+                26
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                43,
+                21
+              ],
+              "end": [
+                41,
+                28
+              ],
+              "material": "concrete"
+            }
+          ],
+          "label_pos": [
+            37.1,
+            23.45
+          ]
+        }
+      ]
+    }
+  ]
+}

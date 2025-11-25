@@ -230,6 +230,47 @@ function createNewRoom() {
     });
 }
 
+function newLayout() {
+    showModal("New Layout", "Enter layout name", "New Building", async (name) => {
+        if (!name) return;
+
+        layout = {
+            name: name,
+            dimensions: { width: 60, depth: 40, height: 21 },
+            floors: []
+        };
+
+        addDefaultFloor();
+        currentFloorIndex = 0;
+        selectedObject = null;
+        updateStatus("Created new layout: " + name);
+        draw();
+
+        // Save immediately to persist and update list
+        try {
+            const res = await fetch('/api/save_as', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    filename: name,
+                    data: layout
+                })
+            });
+            const data = await res.json();
+            updateStatus(data.message);
+
+            // Add .json if missing for selection
+            let fileToSelect = name;
+            if (!fileToSelect.endsWith('.json')) fileToSelect += '.json';
+
+            fetchLayoutList(fileToSelect);
+        } catch (e) {
+            console.error(e);
+            updateStatus("Error saving new layout");
+        }
+    });
+}
+
 function saveLayoutAs() {
     showModal("Save Layout As", "Enter new filename", layout.name, async (filename) => {
         if (!filename) return;
@@ -543,7 +584,9 @@ function setupEvents() {
     if (btnSave) btnSave.onclick = saveLayout;
 
     document.getElementById('btn-save-as').onclick = saveLayoutAs;
+    document.getElementById('btn-new-layout').onclick = newLayout;
     document.getElementById('btn-load-layout').onclick = loadSelectedLayout;
+
     document.getElementById('btn-rename-layout').onclick = renameSelectedLayout;
 
     const btnDelete = document.getElementById('btn-delete-layout');

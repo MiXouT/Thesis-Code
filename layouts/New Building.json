@@ -1,0 +1,58 @@
+{
+  "name": "New Building",
+  "dimensions": {
+    "width": 60,
+    "depth": 40,
+    "height": 21
+  },
+  "floors": [
+    {
+      "level": 0,
+      "height": 3,
+      "rooms": [
+        {
+          "name": "Room 1",
+          "walls": [
+            {
+              "start": [
+                38,
+                18
+              ],
+              "end": [
+                31,
+                30
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                38,
+                18
+              ],
+              "end": [
+                45,
+                35
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                47,
+                32
+              ],
+              "end": [
+                24,
+                25
+              ],
+              "material": "concrete"
+            }
+          ],
+          "label_pos": [
+            37.1,
+            23.45
+          ]
+        }
+      ]
+    }
+  ]
+}
