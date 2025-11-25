@@ -1,0 +1,806 @@
+{
+  "name": "Complex Office Layout",
+  "dimensions": {
+    "width": 60,
+    "depth": 40,
+    "height": 21
+  },
+  "floors": [
+    {
+      "level": 0,
+      "height": 3,
+      "rooms": [
+        {
+          "name": "1st Floor",
+          "walls": [
+            {
+              "start": [
+                33,
+                21
+              ],
+              "end": [
+                37,
+                21
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                21
+              ],
+              "end": [
+                37,
+                24
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                37,
+                24
+              ],
+              "end": [
+                33,
+                24
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                33,
+                21
+              ],
+              "end": [
+                33,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                33,
+                24
+              ],
+              "end": [
+                33,
+                27
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                33,
+                27
+              ],
+              "end": [
+                30,
+                27
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                27
+              ],
+              "end": [
+                30,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                18
+              ],
+              "end": [
+                33,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                27
+              ],
+              "end": [
+                30,
+                29
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                31
+              ],
+              "end": [
+                24,
+                31
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                18
+              ],
+              "end": [
+                30,
+                16
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                14
+              ],
+              "end": [
+                24,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                24,
+                14
+              ],
+              "end": [
+                24,
+                31
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                22
+              ],
+              "end": [
+                24,
+                22
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                24,
+                14
+              ],
+              "end": [
+                24,
+                10
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                24,
+                31
+              ],
+              "end": [
+                24,
+                35
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                24,
+                10
+              ],
+              "end": [
+                30,
+                10
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                10
+              ],
+              "end": [
+                30,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                26,
+                10
+              ],
+              "end": [
+                26,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                24,
+                35
+              ],
+              "end": [
+                30,
+                35
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                35
+              ],
+              "end": [
+                30,
+                32
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                26,
+                35
+              ],
+              "end": [
+                26,
+                32
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                10
+              ],
+              "end": [
+                35,
+                10
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                33,
+                18
+              ],
+              "end": [
+                35,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                18
+              ],
+              "end": [
+                35,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                10
+              ],
+              "end": [
+                35,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                32,
+                10
+              ],
+              "end": [
+                32,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                32,
+                13
+              ],
+              "end": [
+                34,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                10
+              ],
+              "end": [
+                35,
+                9
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                18
+              ],
+              "end": [
+                38,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                38,
+                18
+              ],
+              "end": [
+                38,
+                16
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                38,
+                15
+              ],
+              "end": [
+                43,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                43,
+                15
+              ],
+              "end": [
+                43,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                43,
+                18
+              ],
+              "end": [
+                38,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                43,
+                18
+              ],
+              "end": [
+                45,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                45,
+                18
+              ],
+              "end": [
+                45,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                45,
+                18
+              ],
+              "end": [
+                49,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                18
+              ],
+              "end": [
+                49,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                15
+              ],
+              "end": [
+                46,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                18
+              ],
+              "end": [
+                52,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                52,
+                18
+              ],
+              "end": [
+                52,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                15
+              ],
+              "end": [
+                50,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                52,
+                15
+              ],
+              "end": [
+                51,
+                15
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                52,
+                18
+              ],
+              "end": [
+                54,
+                18
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                54,
+                18
+              ],
+              "end": [
+                54,
+                9
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                54,
+                9
+              ],
+              "end": [
+                35,
+                9
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                52,
+                15
+              ],
+              "end": [
+                52,
+                14
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                54,
+                13
+              ],
+              "end": [
+                50,
+                13
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                13
+              ],
+              "end": [
+                49,
+                9
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                52,
+                9
+              ],
+              "end": [
+                52,
+                12
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                33,
+                27
+              ],
+              "end": [
+                54,
+                27
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                30,
+                35
+              ],
+              "end": [
+                35,
+                35
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                35
+              ],
+              "end": [
+                35,
+                36
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                36
+              ],
+              "end": [
+                54,
+                36
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                54,
+                36
+              ],
+              "end": [
+                54,
+                27
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                32,
+                35
+              ],
+              "end": [
+                32,
+                32
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                32,
+                32
+              ],
+              "end": [
+                34,
+                32
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                35
+              ],
+              "end": [
+                35,
+                32
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                35,
+                27
+              ],
+              "end": [
+                35,
+                30
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                36
+              ],
+              "end": [
+                49,
+                32
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                52,
+                36
+              ],
+              "end": [
+                52,
+                33
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                54,
+                32
+              ],
+              "end": [
+                50,
+                32
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                52,
+                27
+              ],
+              "end": [
+                52,
+                31
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                38,
+                27
+              ],
+              "end": [
+                38,
+                29
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                38,
+                30
+              ],
+              "end": [
+                43,
+                30
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                43,
+                30
+              ],
+              "end": [
+                43,
+                27
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                45,
+                27
+              ],
+              "end": [
+                45,
+                30
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                46,
+                30
+              ],
+              "end": [
+                49,
+                30
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                30
+              ],
+              "end": [
+                49,
+                27
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                49,
+                30
+              ],
+              "end": [
+                50,
+                30
+              ],
+              "material": "concrete"
+            },
+            {
+              "start": [
+                52,
+                30
+              ],
+              "end": [
+                51,
+                30
+              ],
+              "material": "concrete"
+            }
+          ],
+          "label_pos": [
+            34.80042724609375,
+            22.699999809265137
+          ]
+        }
+      ]
+    }
+  ]
+}
