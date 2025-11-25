@@ -1,10 +1,10 @@
 {
   "ROUTER_BASE_LOAD_WATTS": 10,
   "TX_POWER_LEVELS": {
-    "1": 5,
-    "2": 12,
-    "3": 16,
-    "4": 20
+    "1": 10,
+    "2": 24,
+    "3": 32,
+    "4": 40
   },
-  "POE_ENABLED": true
+  "POE_ENABLED": false
 }

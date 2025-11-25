@@ -166,7 +166,13 @@ class Visualizer:
         )
         return fig
 
-    def plot_pareto_front(self, res, title="Multi-Objective Pareto Front Analysis"):
+    def plot_pareto_front(
+        self,
+        res,
+        random_F=None,
+        grid_F=None,
+        title="Multi-Objective Pareto Front Analysis",
+    ):
         """
         Plots 3 2D projections of the 3-Objective Pareto Front
         Obj 1: Uncovered Sensors (Min)
@@ -186,6 +192,57 @@ class Visualizer:
             ),
         )
 
+        # Helper to add baseline traces
+        def add_baseline(F_data, name, color, symbol):
+            if F_data is None or len(F_data) == 0:
+                return
+            # 1. Cov vs Energy
+            fig.add_trace(
+                go.Scatter(
+                    x=F_data[:, 1],
+                    y=F_data[:, 0],
+                    mode="markers",
+                    marker=dict(color=color, symbol=symbol, size=6, opacity=0.5),
+                    name=name,
+                    legendgroup=name,
+                ),
+                row=1,
+                col=1,
+            )
+            # 2. Energy vs Int
+            fig.add_trace(
+                go.Scatter(
+                    x=F_data[:, 1],
+                    y=F_data[:, 2],
+                    mode="markers",
+                    marker=dict(color=color, symbol=symbol, size=6, opacity=0.5),
+                    name=name,
+                    legendgroup=name,
+                    showlegend=False,
+                ),
+                row=1,
+                col=2,
+            )
+            # 3. Cov vs Int
+            fig.add_trace(
+                go.Scatter(
+                    x=F_data[:, 0],
+                    y=F_data[:, 2],
+                    mode="markers",
+                    marker=dict(color=color, symbol=symbol, size=6, opacity=0.5),
+                    name=name,
+                    legendgroup=name,
+                    showlegend=False,
+                ),
+                row=1,
+                col=3,
+            )
+
+        # Add Baselines first (so they are behind AI?) or after?
+        # Let's add them first so AI pops out
+        add_baseline(random_F, "Random (Monkey)", "gray", "circle")
+        add_baseline(grid_F, "Grid (Uniform)", "orange", "square")
+
         # 1. Coverage vs Energy (Uncovered vs Watts)
         fig.add_trace(
             go.Scatter(
@@ -194,7 +251,8 @@ class Visualizer:
                 mode="markers",
                 marker=dict(color="blue", size=8),
                 text=[f"I: {i}" for i in F[:, 2]],
-                name="Cov vs Pwr",
+                name="AI (NSGA-II)",
+                legendgroup="AI",
             ),
             row=1,
             col=1,
@@ -206,8 +264,10 @@ class Visualizer:
                 x=F[:, 1],  # Watts
                 y=F[:, 2],  # Interference
                 mode="markers",
-                marker=dict(color="green", size=8),
-                name="Pwr vs Int",
+                marker=dict(color="blue", size=8),
+                name="AI (NSGA-II)",
+                legendgroup="AI",
+                showlegend=False,
             ),
             row=1,
             col=2,
@@ -219,14 +279,16 @@ class Visualizer:
                 x=F[:, 0],  # Uncovered
                 y=F[:, 2],  # Interference
                 mode="markers",
-                marker=dict(color="red", size=8),
-                name="Cov vs Int",
+                marker=dict(color="blue", size=8),
+                name="AI (NSGA-II)",
+                legendgroup="AI",
+                showlegend=False,
             ),
             row=1,
             col=3,
         )
 
-        fig.update_layout(title=title, showlegend=False)
+        fig.update_layout(title=title, showlegend=True)
 
         # Update axes labels
         fig.update_xaxes(title_text="Total Power (Watts)", row=1, col=1)

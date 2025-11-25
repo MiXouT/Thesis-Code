@@ -13,7 +13,7 @@ from src.optimization import Optimizer
 from src.visualization import Visualizer
 import src.geometry as geometry
 import src.config as config
-import baseline
+import src.baseline as baseline
 
 
 def get_building_from_config():
@@ -125,9 +125,22 @@ def main():
     print(
         f"\nBest AI Solution: {active_routers} Routers, {best_uncovered} Uncovered, {best_power:.2f} Watts, {best_interference} Interfered"
     )
-    # print("\n--- Baseline Comparison ---")
-    # baseline.run_random_baseline(loss_matrix, int(best_routers))
-    # baseline.run_grid_baseline(loss_matrix, candidates, int(best_routers))
+
+    print("\n--- Baseline Comparison ---")
+    # Run Baselines
+    # Need to pass candidates to grid baseline for sorting
+    # Convert candidates to numpy array of [x, y, z]
+    candidate_coords = np.array([[p.x, p.y, p.z] for p in candidates])
+
+    random_X, random_F, random_G = baseline.generate_random_solutions(
+        optimizer.problem, n_solutions=50
+    )
+    grid_X, grid_F, grid_G = baseline.generate_grid_solutions(
+        optimizer.problem, candidate_coords
+    )
+
+    print(f"Random Baseline: Generated {len(random_F)} solutions.")
+    print(f"Grid Baseline: Generated {len(grid_F)} solutions.")
 
     # 7. Visualize
     viz = Visualizer(building)
@@ -138,7 +151,9 @@ def main():
     meta_title = f"{building.name} | Base Load: {config.ROUTER_BASE_LOAD_WATTS}W | PoE: {poe_status} | Tx Levels: {tx_levels} dBm"
 
     # Plot Pareto Front (3D/Multi-plot)
-    fig_pareto = viz.plot_pareto_front(res, title=f"Pareto Front - {meta_title}")
+    fig_pareto = viz.plot_pareto_front(
+        res, random_F=random_F, grid_F=grid_F, title=f"Pareto Front - {meta_title}"
+    )
     fig_pareto.write_html("pareto_front.html")
     print("Saved pareto_front.html")
 
