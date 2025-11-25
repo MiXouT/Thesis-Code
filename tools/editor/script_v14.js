@@ -934,3 +934,99 @@ function updatePropertiesPanel() {
 }
 
 init();
+
+// Settings Modal Logic
+function setupSettingsEvents() {
+    const settingsBtn = document.getElementById('btn-settings');
+    const settingsSaveBtn = document.getElementById('btn-settings-save');
+    const settingsCancelBtn = document.getElementById('btn-settings-cancel');
+
+    if (settingsBtn) {
+        settingsBtn.onclick = openSettings;
+    }
+
+    if (settingsSaveBtn) {
+        settingsSaveBtn.onclick = saveSettings;
+    }
+
+    if (settingsCancelBtn) {
+        settingsCancelBtn.onclick = closeSettings;
+    }
+}
+
+// Call this from setupEvents or init
+// For now, we'll append a call to it
+setupSettingsEvents();
+
+
+async function openSettings() {
+    const modal = document.getElementById('settings-modal');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+
+    try {
+        const res = await fetch('/api/config');
+        const config = await res.json();
+
+        if (config.ROUTER_BASE_LOAD_WATTS) {
+            document.getElementById('setting-base-load').value = config.ROUTER_BASE_LOAD_WATTS;
+        }
+
+        if (config.TX_POWER_LEVELS) {
+            document.getElementById('setting-power-1').value = config.TX_POWER_LEVELS["1"];
+            document.getElementById('setting-power-2').value = config.TX_POWER_LEVELS["2"];
+            document.getElementById('setting-power-3').value = config.TX_POWER_LEVELS["3"];
+            document.getElementById('setting-power-4').value = config.TX_POWER_LEVELS["4"];
+        }
+    } catch (e) {
+        console.error("Error loading config:", e);
+        updateStatus("Error loading settings");
+    }
+}
+
+function closeSettings() {
+    const modal = document.getElementById('settings-modal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+}
+
+async function saveSettings() {
+    const baseLoad = parseFloat(document.getElementById('setting-base-load').value);
+    const p1 = parseFloat(document.getElementById('setting-power-1').value);
+    const p2 = parseFloat(document.getElementById('setting-power-2').value);
+    const p3 = parseFloat(document.getElementById('setting-power-3').value);
+    const p4 = parseFloat(document.getElementById('setting-power-4').value);
+
+    if (isNaN(baseLoad) || isNaN(p1) || isNaN(p2) || isNaN(p3) || isNaN(p4)) {
+        alert("Please enter valid numbers");
+        return;
+    }
+
+    const config = {
+        "ROUTER_BASE_LOAD_WATTS": baseLoad,
+        "TX_POWER_LEVELS": {
+            "1": p1,
+            "2": p2,
+            "3": p3,
+            "4": p4
+        }
+    };
+
+    try {
+        const res = await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+            updateStatus("Settings saved");
+            closeSettings();
+        } else {
+            updateStatus("Error saving settings: " + result.message);
+        }
+    } catch (e) {
+        console.error(e);
+        updateStatus("Error saving settings");
+    }
+}

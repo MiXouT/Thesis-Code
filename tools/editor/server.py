@@ -10,6 +10,7 @@ EDITOR_DIR = os.path.dirname(os.path.abspath(__file__))
 # The project root (two levels up: tools/editor -> tools -> root)
 PROJECT_ROOT = os.path.dirname(os.path.dirname(EDITOR_DIR))
 LAYOUT_FILE = os.path.join(PROJECT_ROOT, "layout.json")
+CONFIG_FILE = os.path.join(PROJECT_ROOT, "config.json")
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -31,7 +32,22 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if not os.path.exists(layouts_dir):
                 os.makedirs(layouts_dir)
             files = [f for f in os.listdir(layouts_dir) if f.endswith(".json")]
+            files = [f for f in os.listdir(layouts_dir) if f.endswith(".json")]
             self.wfile.write(json.dumps(files).encode())
+        elif self.path == "/api/config":
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            if os.path.exists(CONFIG_FILE):
+                with open(CONFIG_FILE, "r") as f:
+                    self.wfile.write(f.read().encode())
+            else:
+                # Default config if file doesn't exist
+                default_config = {
+                    "TX_POWER_LEVELS": {"1": 10.0, "2": 24.0, "3": 32.0, "4": 40.0},
+                    "ROUTER_BASE_LOAD_WATTS": 10.0,
+                }
+                self.wfile.write(json.dumps(default_config).encode())
         else:
             # Explicitly handle MIME types for static files to avoid Windows registry issues
             if self.path.endswith(".js"):
@@ -201,6 +217,23 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.send_header("Content-type", "application/json")
                 self.end_headers()
                 self.wfile.write(b'{"status": "success", "message": "Layout deleted"}')
+            except Exception as e:
+                self._send_error(str(e))
+        elif self.path == "/api/config":
+            try:
+                req = json.loads(post_data)
+
+                # Validate structure roughly
+                if "TX_POWER_LEVELS" not in req or "ROUTER_BASE_LOAD_WATTS" not in req:
+                    raise ValueError("Invalid config data structure")
+
+                with open(CONFIG_FILE, "w") as f:
+                    json.dump(req, f, indent=2)
+
+                self.send_response(200)
+                self.send_header("Content-type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"status": "success", "message": "Config saved"}')
             except Exception as e:
                 self._send_error(str(e))
         else:

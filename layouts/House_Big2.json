@@ -263,39 +263,6 @@
           "walls": [
             {
               "start": [
-                18,
-                20
-              ],
-              "end": [
-                8,
-                20
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                8,
-                20
-              ],
-              "end": [
-                8,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
-                8,
-                0
-              ],
-              "end": [
-                15,
-                0
-              ],
-              "material": "concrete"
-            },
-            {
-              "start": [
                 37,
                 11
               ],

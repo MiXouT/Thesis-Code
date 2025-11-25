@@ -6,18 +6,35 @@ BUILDING_DIMENSIONS = (60, 40, 21)  # x, y, z (meters)
 
 # Signal Propagation
 FREQUENCY_HZ = 2.4e9  # 2.4 GHz
-# TX_POWER_DBM is removed in favor of variable levels
-# Power Levels: 0=Off, 1=Low, 2=Med, 3=High, 4=Max
-TX_POWER_LEVELS = {
-    1: 10.0,  # 3mW  ~ 10dBm
-    2: 24.0,  # 15mW ~ 24dBm
-    3: 32.0,  # 40mW ~ 32dBm
-    4: 40.0,  # 100mW ~ 40dBm
-}
+import json
+import os
 
-# Power Consumption (Watts)
-# Base Load: Hardware overhead (CPU, WiFi chip idle/active baseline)
+# Load external config if available
+CONFIG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.json")
+
+# Defaults
+TX_POWER_LEVELS = {
+    1: 10.0,
+    2: 24.0,
+    3: 32.0,
+    4: 40.0,
+}
 ROUTER_BASE_LOAD_WATTS = 10.0
+
+if os.path.exists(CONFIG_FILE):
+    try:
+        with open(CONFIG_FILE, "r") as f:
+            config_data = json.load(f)
+            if "TX_POWER_LEVELS" in config_data:
+                # Convert keys to int since JSON keys are always strings
+                TX_POWER_LEVELS = {
+                    int(k): float(v) for k, v in config_data["TX_POWER_LEVELS"].items()
+                }
+            if "ROUTER_BASE_LOAD_WATTS" in config_data:
+                ROUTER_BASE_LOAD_WATTS = float(config_data["ROUTER_BASE_LOAD_WATTS"])
+            print(f"Loaded config from {CONFIG_FILE}")
+    except Exception as e:
+        print(f"Error loading config.json: {e}")
 
 # Radio Power (Watts) added to Base Load
 TX_POWER_WATTS = {

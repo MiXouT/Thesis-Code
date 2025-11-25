@@ -1,0 +1,9 @@
+{
+  "ROUTER_BASE_LOAD_WATTS": 10,
+  "TX_POWER_LEVELS": {
+    "1": 10,
+    "2": 24,
+    "3": 32,
+    "4": 40
+  }
+}
