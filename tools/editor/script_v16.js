@@ -569,6 +569,21 @@ function setupEvents() {
     // Delete Modal
     document.getElementById('btn-delete-cancel').onclick = closeDeleteModal;
     document.getElementById('btn-delete-confirm').onclick = confirmDelete;
+
+    // Settings
+    const btnSettings = document.getElementById('btn-settings');
+    if (btnSettings) {
+        console.log("Attaching Settings listener");
+        btnSettings.onclick = openSettings;
+    } else {
+        console.error("Settings button not found!");
+    }
+
+    const btnSettingsSave = document.getElementById('btn-settings-save');
+    if (btnSettingsSave) btnSettingsSave.onclick = saveSettings;
+
+    const btnSettingsCancel = document.getElementById('btn-settings-cancel');
+    if (btnSettingsCancel) btnSettingsCancel.onclick = closeSettings;
 }
 
 function setTool(tool) {
@@ -935,31 +950,8 @@ function updatePropertiesPanel() {
 
 init();
 
-// Settings Modal Logic
-function setupSettingsEvents() {
-    const settingsBtn = document.getElementById('btn-settings');
-    const settingsSaveBtn = document.getElementById('btn-settings-save');
-    const settingsCancelBtn = document.getElementById('btn-settings-cancel');
-
-    if (settingsBtn) {
-        settingsBtn.onclick = openSettings;
-    }
-
-    if (settingsSaveBtn) {
-        settingsSaveBtn.onclick = saveSettings;
-    }
-
-    if (settingsCancelBtn) {
-        settingsCancelBtn.onclick = closeSettings;
-    }
-}
-
-// Call this from setupEvents or init
-// For now, we'll append a call to it
-setupSettingsEvents();
-
-
 async function openSettings() {
+    alert("Opening Settings..."); // Debug alert
     const modal = document.getElementById('settings-modal');
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
@@ -977,6 +969,10 @@ async function openSettings() {
             document.getElementById('setting-power-2').value = config.TX_POWER_LEVELS["2"];
             document.getElementById('setting-power-3').value = config.TX_POWER_LEVELS["3"];
             document.getElementById('setting-power-4').value = config.TX_POWER_LEVELS["4"];
+        }
+
+        if (config.POE_ENABLED !== undefined) {
+            document.getElementById('setting-poe-enabled').checked = config.POE_ENABLED;
         }
     } catch (e) {
         console.error("Error loading config:", e);
@@ -996,6 +992,7 @@ async function saveSettings() {
     const p2 = parseFloat(document.getElementById('setting-power-2').value);
     const p3 = parseFloat(document.getElementById('setting-power-3').value);
     const p4 = parseFloat(document.getElementById('setting-power-4').value);
+    const poeEnabled = document.getElementById('setting-poe-enabled').checked;
 
     if (isNaN(baseLoad) || isNaN(p1) || isNaN(p2) || isNaN(p3) || isNaN(p4)) {
         alert("Please enter valid numbers");
@@ -1009,7 +1006,8 @@ async function saveSettings() {
             "2": p2,
             "3": p3,
             "4": p4
-        }
+        },
+        "POE_ENABLED": poeEnabled
     };
 
     try {

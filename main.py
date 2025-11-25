@@ -11,6 +11,8 @@ from src.environment import Building, Room, Point
 from src.physics import LossMatrix
 from src.optimization import Optimizer
 from src.visualization import Visualizer
+import src.geometry as geometry
+import src.config as config
 import baseline
 
 
@@ -62,8 +64,8 @@ def main():
     # 2. Generate Points
     # Candidates: Coarse grid (e.g., every 5m for larger building)
     candidates = generate_grid_points(
-        building, spacing=5.0, height_offset=3.5
-    )  # Ceiling height
+        building, spacing=5.0, height_offset=2.5
+    )  # Ceiling height (adjusted to be < 3.0m room height)
     print(f"Generated {len(candidates)} candidate router locations.")
 
     # Sensors: Fine grid (e.g., every 1.5m to keep count reasonable)
@@ -76,8 +78,25 @@ def main():
     lm = LossMatrix(building, candidates, sensors)
     loss_matrix = lm.compute()
 
+    # 3b. Precompute Wall Distances for PoE Constraint
+    print("Precomputing wall distances...")
+    # Extract walls from building
+    walls = []
+    for room in building.rooms:
+        for wall in room.walls:
+            # Wall is a Wall object, need start/end
+            # Wall.start and Wall.end are Point objects
+            walls.append(
+                {"start": [wall.start.x, wall.start.y], "end": [wall.end.x, wall.end.y]}
+            )
+
+    # Convert candidates to numpy array for geometry function
+    candidate_coords = np.array([[p.x, p.y, p.z] for p in candidates])
+    wall_dist_cache = geometry.precompute_wall_distances(candidate_coords, walls)
+    print("Wall distance cache built.")
+
     # 4. Run Optimization
-    optimizer = Optimizer(loss_matrix)
+    optimizer = Optimizer(loss_matrix, wall_dist_cache)
     res = optimizer.run()
 
     # 5. Analyze Results
@@ -113,8 +132,13 @@ def main():
     # 7. Visualize
     viz = Visualizer(building)
 
+    # Construct Metadata Title
+    poe_status = "On" if config.POE_ENABLED else "Off"
+    tx_levels = list(config.TX_POWER_LEVELS.values())
+    meta_title = f"{building.name} | Base Load: {config.ROUTER_BASE_LOAD_WATTS}W | PoE: {poe_status} | Tx Levels: {tx_levels} dBm"
+
     # Plot Pareto Front (3D/Multi-plot)
-    fig_pareto = viz.plot_pareto_front(res)
+    fig_pareto = viz.plot_pareto_front(res, title=f"Pareto Front - {meta_title}")
     fig_pareto.write_html("pareto_front.html")
     print("Saved pareto_front.html")
 
@@ -125,7 +149,7 @@ def main():
         best_solution,
         sensors,
         loss_matrix,
-        title=f"Best AI Solution ({active_routers} Routers, {best_power:.2f}W)",
+        title=f"Best Solution ({active_routers} Routers, {best_power:.2f}W) <br> {meta_title}",
     )
     fig_sol.write_html("solution_map.html")
     print("Saved solution_map.html")

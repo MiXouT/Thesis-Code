@@ -19,7 +19,9 @@ TX_POWER_LEVELS = {
     3: 32.0,
     4: 40.0,
 }
-ROUTER_BASE_LOAD_WATTS = 10.0
+ROUTER_BASE_LOAD_WATTS = 6.0
+POE_ENABLED = False
+POE_MAX_DISTANCE = 0.5
 
 if os.path.exists(CONFIG_FILE):
     try:
@@ -32,6 +34,10 @@ if os.path.exists(CONFIG_FILE):
                 }
             if "ROUTER_BASE_LOAD_WATTS" in config_data:
                 ROUTER_BASE_LOAD_WATTS = float(config_data["ROUTER_BASE_LOAD_WATTS"])
+
+            POE_ENABLED = config_data.get("POE_ENABLED", False)
+            POE_MAX_DISTANCE = config_data.get("POE_MAX_DISTANCE", 0.5)
+
             print(f"Loaded config from {CONFIG_FILE}")
     except Exception as e:
         print(f"Error loading config.json: {e}")

@@ -119,13 +119,23 @@
                 </div>
             </div>
 
+            <div class="control-group" style="margin-top: 15px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="setting-poe-enabled" style="width: auto;">
+                    <span>Enforce PoE (Wall Constraint)</span>
+                </label>
+                <p class="hint" style="margin-top: 5px; font-size: 0.8em; color: #888;">
+                    If enabled, routers must be placed within 0.5m of a wall.
+                </p>
+            </div>
+
             <div class="modal-actions" style="margin-top: 20px;">
                 <button id="btn-settings-cancel" class="tool-btn">Cancel</button>
                 <button id="btn-settings-save" class="tool-btn active">Save Config</button>
             </div>
         </div>
     </div>
-    <script src="script_v14.js" defer></script>
+    <script src="script_v16.js" defer></script>
 </body>
 
 </html>

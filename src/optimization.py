@@ -15,10 +15,16 @@ from .config import (
     TX_POWER_LEVELS,
     TX_POWER_WATTS,
     ROUTER_BASE_LOAD_WATTS,
+    POE_ENABLED,
+    POE_MAX_DISTANCE,
 )
 
 
 class IntegerSampling(IntegerRandomSampling):
+    def __init__(self, wall_dist_cache=None):
+        super().__init__()
+        self.wall_dist_cache = wall_dist_cache
+
     def _do(self, problem, n_samples, **kwargs):
         # Custom sampling to favor 0 (Off) but allow 1-4
         # We want roughly ROUTER_COUNT_MAX active routers per individual
@@ -27,29 +33,60 @@ class IntegerSampling(IntegerRandomSampling):
 
         prob_active = min(ROUTER_COUNT_MAX / n_var, 0.5)
 
+        # Pre-calculate valid indices if PoE is enabled
+        valid_indices = None
+        if POE_ENABLED and self.wall_dist_cache is not None:
+            valid_indices = np.where(self.wall_dist_cache <= POE_MAX_DISTANCE)[0]
+            if len(valid_indices) == 0:
+                print(
+                    "WARNING: No valid wall locations found for PoE. Ignoring constraint for initialization."
+                )
+                valid_indices = None
+
         for i in range(n_samples):
-            # Decide which are active
-            active_mask = np.random.random(n_var) < prob_active
-            # Assign random power level 1-4 to active ones
-            X[i, active_mask] = np.random.randint(1, 5, size=np.sum(active_mask))
+            # Decide how many to activate (binomial distribution centered on ROUTER_COUNT_MAX)
+            # Or just simple probability mask
+
+            if valid_indices is not None:
+                # PoE Mode: Pick from valid indices only
+                # How many?
+                n_active = np.random.binomial(n_var, prob_active)
+                n_active = max(
+                    1, min(n_active, len(valid_indices))
+                )  # Ensure at least 1 if possible
+
+                chosen_indices = np.random.choice(
+                    valid_indices, size=n_active, replace=False
+                )
+                X[i, chosen_indices] = np.random.randint(1, 5, size=n_active)
+            else:
+                # Standard Mode
+                active_mask = np.random.random(n_var) < prob_active
+                X[i, active_mask] = np.random.randint(1, 5, size=np.sum(active_mask))
 
         return X
 
 
 class RouterPlacementProblem(ElementwiseProblem):
-    def __init__(self, loss_matrix: np.ndarray, threshold: float = RX_SENSITIVITY_DBM):
+    def __init__(
+        self,
+        loss_matrix: np.ndarray,
+        wall_dist_cache: np.ndarray = None,
+        threshold: float = RX_SENSITIVITY_DBM,
+    ):
         """
         Integer optimization problem:
         x[i] = 0 (Off), 1 (Low), 2 (Med), 3 (High), 4 (Max)
         """
         self.loss_matrix = loss_matrix  # (n_candidates, n_sensors)
+        self.wall_dist_cache = wall_dist_cache  # (n_candidates,)
         self.threshold = threshold
         n_var = loss_matrix.shape[0]
 
         super().__init__(
             n_var=n_var,
             n_obj=3,  # Obj1: Min Uncovered, Obj2: Min Total Power, Obj3: Min Interference
-            n_ieq_constr=0,
+            n_ieq_constr=1 if POE_ENABLED else 0,  # 1 Constraint if PoE is on
             xl=0,
             xu=4,
             vtype=int,
@@ -68,6 +105,8 @@ class RouterPlacementProblem(ElementwiseProblem):
             n_sensors = self.loss_matrix.shape[1]
             # Penalize heavily
             out["F"] = [n_sensors, 0.0, 0.0]
+            if self.n_ieq_constr > 0:
+                out["G"] = [0.0]  # No violation if no routers (technically)
             return
 
         # 1. Calculate Signal Strength at each sensor from each active router
@@ -106,14 +145,32 @@ class RouterPlacementProblem(ElementwiseProblem):
 
         out["F"] = [uncovered_sensors, total_watts, interfered_sensors]
 
+        # 5. PoE Constraint (G)
+        if POE_ENABLED and self.wall_dist_cache is not None:
+            # Get distances for active routers
+            dists = self.wall_dist_cache[active_indices]
+            # Violation = dist - max_dist
+            # We want G <= 0. So if dist > max, G > 0 (violation)
+            # We can sum the violations or take the max.
+            # Pymoo handles array of constraints, but we defined n_ieq_constr=1
+            # So we need to aggregate. Let's take the MAX violation.
+            # If any router is too far, it's a violation.
+
+            violations = dists - POE_MAX_DISTANCE
+            # We only care about positive violations
+            # But pymoo expects G <= 0.
+            # If we return max(violations), and it's 0.1, that's a violation.
+            # If it's -0.5, that's satisfied.
+            out["G"] = [np.max(violations)]
+
 
 class Optimizer:
-    def __init__(self, loss_matrix: np.ndarray):
-        self.problem = RouterPlacementProblem(loss_matrix)
+    def __init__(self, loss_matrix: np.ndarray, wall_dist_cache: np.ndarray = None):
+        self.problem = RouterPlacementProblem(loss_matrix, wall_dist_cache)
 
         self.algorithm = NSGA2(
             pop_size=POPULATION_SIZE,
-            sampling=IntegerSampling(),
+            sampling=IntegerSampling(wall_dist_cache),
             crossover=SBX(prob=0.9, eta=15, vtype=float, repair=None),
             mutation=PM(
                 prob=1.0 / loss_matrix.shape[0], eta=20, vtype=float, repair=None
@@ -126,6 +183,9 @@ class Optimizer:
     def run(self):
         print("Starting Optimization (NSGA-II) with Variable Power...")
         print("Objectives: [Min Uncovered, Min Watts, Min Interference]")
+        if POE_ENABLED:
+            print(f"Constraint: PoE Enabled (Max Dist: {POE_MAX_DISTANCE}m)")
+
         res = minimize(
             self.problem,
             self.algorithm,

@@ -150,10 +150,23 @@ class Visualizer:
             scene=dict(aspectmode="data"),
             legend=dict(x=0, y=1),
             margin=dict(r=100),
+            annotations=[
+                dict(
+                    text="Tip: Click legend items to toggle visibility",
+                    showarrow=False,
+                    xref="paper",
+                    yref="paper",
+                    x=0,
+                    y=0,
+                    xanchor="left",
+                    yanchor="bottom",
+                    font=dict(size=12, color="gray"),
+                )
+            ],
         )
         return fig
 
-    def plot_pareto_front(self, res):
+    def plot_pareto_front(self, res, title="Multi-Objective Pareto Front Analysis"):
         """
         Plots 3 2D projections of the 3-Objective Pareto Front
         Obj 1: Uncovered Sensors (Min)
@@ -213,9 +226,7 @@ class Visualizer:
             col=3,
         )
 
-        fig.update_layout(
-            title="Multi-Objective Pareto Front Analysis", showlegend=False
-        )
+        fig.update_layout(title=title, showlegend=False)
 
         # Update axes labels
         fig.update_xaxes(title_text="Total Power (Watts)", row=1, col=1)
