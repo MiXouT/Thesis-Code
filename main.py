@@ -171,6 +171,29 @@ def main():
     fig_sol.write_html("solution_map.html")
     print("Saved solution_map.html")
 
+    # 8. Print Pareto Data to Terminal
+    print("\n=== Pareto Front Data (Text Output) ===")
+
+    datasets = {"AI": res.F, "Random": random_F, "Grid": grid_F}
+
+    # F columns: 0=Uncovered, 1=Power, 2=Interference
+    charts = [
+        ("Coverage vs Energy", 0, 1, "Uncovered", "Power(W)"),
+        ("Energy vs Interference", 1, 2, "Power(W)", "Interference"),
+        ("Coverage vs Interference", 0, 2, "Uncovered", "Interference"),
+    ]
+
+    for chart_name, x_idx, y_idx, x_label, y_label in charts:
+        print(f"\n--- {chart_name} ---")
+        for method_name, data in datasets.items():
+            print(f"\n[{method_name}]")
+            print(f"{x_label}, {y_label}")
+            # Sort by X for readability
+            sorted_indices = np.argsort(data[:, x_idx])
+            sorted_data = data[sorted_indices]
+            for row in sorted_data:
+                print(f"{row[x_idx]:.4f}, {row[y_idx]:.4f}")
+
 
 if __name__ == "__main__":
     main()
