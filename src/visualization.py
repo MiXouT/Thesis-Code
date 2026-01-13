@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 import numpy as np
+import pandas as pd
 from plotly.subplots import make_subplots
 from .environment import Building, Point
 from .config import RX_SENSITIVITY_DBM, TX_POWER_LEVELS
@@ -312,5 +313,137 @@ class Visualizer:
 
         fig.update_xaxes(title_text="Uncovered Sensors", row=1, col=3)
         fig.update_yaxes(title_text="Interference Count", row=1, col=3)
+
+        return fig
+
+    def plot_convergence(self, res, title="Convergence Plot (Generations vs Fitness)"):
+        """
+        Plots the history of the optimization process.
+        Shows Min of each objective over generations.
+        """
+        n_evals = []  # Can't easily get evals, use generations
+        # History object contains a list of Algorithm objects (one per gen)
+        # res.history is a list[Algorithm]
+
+        hist = res.history
+        n_gen = len(hist)
+
+        # Lists to store min values for each objective per generation
+        min_uncovered = []
+        min_power = []
+        min_interference = []
+
+        for algo in hist:
+            # algo.pop is the population at that generation
+            # algo.pop.get("F") returns (PopSize, 3) array
+            F_gen = algo.pop.get("F")
+
+            # Get min of each column
+            min_uncovered.append(np.min(F_gen[:, 0]))
+            min_power.append(np.min(F_gen[:, 1]))
+            min_interference.append(np.min(F_gen[:, 2]))
+
+        x_axis = np.arange(1, n_gen + 1)
+
+        fig = make_subplots(
+            rows=3,
+            cols=1,
+            shared_xaxes=True,
+            vertical_spacing=0.1,
+            subplot_titles=(
+                "Raw Coverage (Uncovered Sensors)",
+                "Total Power (Watts)",
+                "Interference Count",
+            ),
+        )
+
+        # 1. Uncovered
+        fig.add_trace(
+            go.Scatter(
+                x=x_axis,
+                y=min_uncovered,
+                mode="lines",
+                name="Min Uncovered",
+                line=dict(color="red"),
+            ),
+            row=1,
+            col=1,
+        )
+
+        # 2. Power
+        fig.add_trace(
+            go.Scatter(
+                x=x_axis,
+                y=min_power,
+                mode="lines",
+                name="Min Power",
+                line=dict(color="blue"),
+            ),
+            row=2,
+            col=1,
+        )
+
+        # 3. Interference
+        fig.add_trace(
+            go.Scatter(
+                x=x_axis,
+                y=min_interference,
+                mode="lines",
+                name="Min Interference",
+                line=dict(color="green"),
+            ),
+            row=3,
+            col=1,
+        )
+
+        fig.update_layout(title=title, height=800, showlegend=False)
+        fig.update_xaxes(title_text="Generation", row=3, col=1)
+
+        return fig
+
+    def plot_energy_boxplot(
+        self, ai_F, random_F, grid_F, title="Energy Distribution Comparison"
+    ):
+        """
+        Comparison of Energy Consumption (Objective 2) across methods.
+        """
+        # Create DataFrame for Plotly Express style or just use GO
+        # F[:, 1] is Power
+
+        y_ai = ai_F[:, 1]
+        y_rnd = random_F[:, 1]
+        y_grid = grid_F[:, 1]
+
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Box(
+                y=y_ai,
+                name="AI (NSGA-II)",
+                boxpoints="all",
+                jitter=0.3,
+                pointpos=-1.8,
+                marker_color="blue",
+            )
+        )
+        fig.add_trace(
+            go.Box(
+                y=y_rnd, name="Random (Top 1000)", boxpoints=False, marker_color="gray"
+            )
+        )  # Don't show all 1000 points
+        fig.add_trace(
+            go.Box(
+                y=y_grid,
+                name="Grid Baseline",
+                boxpoints="all",
+                jitter=0.3,
+                pointpos=-1.8,
+                marker_color="orange",
+            )
+        )
+
+        fig.update_layout(
+            title=title, yaxis_title="Total Power Consumption (Watts)", showlegend=False
+        )
 
         return fig

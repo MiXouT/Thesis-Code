@@ -132,8 +132,40 @@ def main():
     # Convert candidates to numpy array of [x, y, z]
     candidate_coords = np.array([[p.x, p.y, p.z] for p in candidates])
 
+    # Calculate total AI evaluations to match fairness
+    total_evals = config.POPULATION_SIZE * config.GENERATIONS
+    print(
+        f"Running Random Baseline with {total_evals} samples (matching AI evaluations)..."
+    )
+
     random_X, random_F, random_G = baseline.generate_random_solutions(
-        optimizer.problem, n_solutions=50
+        optimizer.problem, n_solutions=total_evals
+    )
+
+    # Filter Random Baseline to Top 1000 (Rank-based)
+    print("Filtering Random Baseline to Top 1000 Solutions...")
+    from pymoo.util.nds.non_dominated_sorting import NonDominatedSorting
+
+    # Sort all 40k by rank
+    nds = NonDominatedSorting()
+    fronts = nds.do(random_F)
+
+    best_indices = []
+    for front in fronts:
+        best_indices.extend(front)
+        if len(best_indices) >= 1000:
+            break
+
+    # Truncate to exactly 1000
+    best_indices = best_indices[:1000]
+
+    random_X = random_X[best_indices]
+    random_F = random_F[best_indices]
+    if random_G is not None:
+        random_G = random_G[best_indices]
+
+    print(
+        f"Random Baseline: Reduced {total_evals} samples to the {len(random_F)} best (Top 1000) solutions."
     )
     grid_X, grid_F, grid_G = baseline.generate_grid_solutions(
         optimizer.problem, candidate_coords
@@ -171,6 +203,36 @@ def main():
     fig_sol.write_html("solution_map.html")
     print("Saved solution_map.html")
 
+    # Plot Convergence (Generations vs Fitness)
+    fig_conv = viz.plot_convergence(res, title=f"Convergence Plot - {meta_title}")
+    fig_conv.write_html("convergence_plot.html")
+    print("Saved convergence_plot.html")
+
+    # Save Convergence Data to CSV
+    print("Saving convergence history to CSV...")
+    history_data = []
+    for i, algo in enumerate(res.history):
+        gen = i + 1
+        F_gen = algo.pop.get("F")
+        min_uncovered = np.min(F_gen[:, 0])
+        min_power = np.min(F_gen[:, 1])
+        min_interference = np.min(F_gen[:, 2])
+        history_data.append([gen, min_uncovered, min_power, min_interference])
+
+    df_hist = pd.DataFrame(
+        history_data,
+        columns=["Generation", "Min_Uncovered", "Min_Power", "Min_Interference"],
+    )
+    df_hist.to_csv("convergence_history.csv", index=False)
+    print("Saved convergence_history.csv")
+
+    # Plot Energy Box Plot
+    fig_box = viz.plot_energy_boxplot(
+        res.F, random_F, grid_F, title=f"Energy Distribution - {meta_title}"
+    )
+    fig_box.write_html("energy_boxplot.html")
+    print("Saved energy_boxplot.html")
+
     # 8. Print Pareto Data to Terminal
     print("\n=== Pareto Front Data (Text Output) ===")
 
@@ -183,16 +245,38 @@ def main():
         ("Coverage vs Interference", 0, 2, "Uncovered", "Interference"),
     ]
 
+    # Save full datasets to CSV
+    print("\n=== Saving Results to CSV ===")
+    for method_name, data in datasets.items():
+        df = pd.DataFrame(data, columns=["Uncovered", "Power", "Interference"])
+        csv_filename = f"results_{method_name.lower()}.csv"
+        df.to_csv(csv_filename, index=False)
+        print(f"Saved {method_name} results to {csv_filename}")
+
     for chart_name, x_idx, y_idx, x_label, y_label in charts:
         print(f"\n--- {chart_name} ---")
         for method_name, data in datasets.items():
             print(f"\n[{method_name}]")
             print(f"{x_label}, {y_label}")
+
             # Sort by X for readability
             sorted_indices = np.argsort(data[:, x_idx])
             sorted_data = data[sorted_indices]
-            for row in sorted_data:
-                print(f"{row[x_idx]:.4f}, {row[y_idx]:.4f}")
+
+            # Truncate output if too large
+            MAX_PRINT = 50
+            if len(sorted_data) > MAX_PRINT:
+                # Print first 25
+                for row in sorted_data[:25]:
+                    print(f"{row[x_idx]:.4f}, {row[y_idx]:.4f}")
+                print(f"... ({len(sorted_data) - MAX_PRINT} hidden rows) ...")
+                # Print last 25
+                for row in sorted_data[-25:]:
+                    print(f"{row[x_idx]:.4f}, {row[y_idx]:.4f}")
+                print(f"Full data saved to results_{method_name.lower()}.csv")
+            else:
+                for row in sorted_data:
+                    print(f"{row[x_idx]:.4f}, {row[y_idx]:.4f}")
 
 
 if __name__ == "__main__":
