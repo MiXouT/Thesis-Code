@@ -203,6 +203,48 @@ def main():
     fig_sol.write_html("solution_map.html")
     print("Saved solution_map.html")
 
+    # --- Plot Random Baseline Best Solution ---
+    # Find best Random solution (min Uncovered, then min Power)
+    rnd_indices = np.lexsort((random_F[:, 1], random_F[:, 0]))
+    best_rnd_idx = rnd_indices[0]
+    best_rnd_sol = random_X[best_rnd_idx]
+    best_rnd_obj = random_F[best_rnd_idx]
+
+    rnd_active = np.sum(best_rnd_sol > 0)
+
+    fig_rnd = viz.plot_solution(
+        candidates,
+        best_rnd_sol,
+        sensors,
+        loss_matrix,
+        uncovered=best_rnd_obj[0],
+        interfered=best_rnd_obj[2],
+        title=f"Best Random Solution ({rnd_active} Routers, {best_rnd_obj[1]:.2f}W) <br> {meta_title}",
+    )
+    fig_rnd.write_html("solution_map_random.html")
+    print("Saved solution_map_random.html")
+
+    # --- Plot Grid Baseline Best Solution ---
+    # Find best Grid solution (min Uncovered, then min Power)
+    grid_indices = np.lexsort((grid_F[:, 1], grid_F[:, 0]))
+    best_grid_idx = grid_indices[0]
+    best_grid_sol = grid_X[best_grid_idx]
+    best_grid_obj = grid_F[best_grid_idx]
+
+    grid_active = np.sum(best_grid_sol > 0)
+
+    fig_grid = viz.plot_solution(
+        candidates,
+        best_grid_sol,
+        sensors,
+        loss_matrix,
+        uncovered=best_grid_obj[0],
+        interfered=best_grid_obj[2],
+        title=f"Best Grid Solution ({grid_active} Routers, {best_grid_obj[1]:.2f}W) <br> {meta_title}",
+    )
+    fig_grid.write_html("solution_map_grid.html")
+    print("Saved solution_map_grid.html")
+
     # Plot Convergence (Generations vs Fitness)
     fig_conv = viz.plot_convergence(res, title=f"Convergence Plot - {meta_title}")
     fig_conv.write_html("convergence_plot.html")
