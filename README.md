@@ -29,8 +29,19 @@ This project implements a multi-objective optimization framework for placing IoT
     *Dependencies include: `numpy`, `scipy`, `pandas`, `plotly`, `pymoo`.*
 
 ## Usage
+### 1. Using the Layout Editor
 
-### 1. Running the Simulation
+To design or modify building layouts:
+
+1.  Start the editor server:
+    ```bash
+    python tools/editor/server.py
+    ```
+2.  Open your browser and navigate to: `http://localhost:8000`
+
+You can draw rooms, add walls, and save layouts directly to the `layouts/` directory.
+
+### 2. Running the Simulation
 
 To run the optimization and baseline comparisons:
 
@@ -44,17 +55,29 @@ This will:
 -   Run Random and Grid baseline algorithms.
 -   Generate results in `pareto_front.html` and `solution_map.html`.
 
-### 2. Using the Layout Editor
+-   ## 3. Results
 
-To design or modify building layouts:
+After running the simulation, open the generated HTML files in your browser:
+```bash
+powershell -c "Start-Process pareto_front.html; Start-Process solution_map.html; Start-Process solution_map_random.html; Start-Process solution_map_grid.html; Start-Process convergence_plot.html; Start-Process energy_boxplot.html; Start-Process interference_boxplot.html; Start-Process coverage_efficiency.html; Start-Process scenario_A_vertical.html; Start-Process scenario_B_shadow.html"
+```
+-   📊 Visualization & Analysis Plots
+solution_map.html: Interactive 3D heatmap of the AI's optimal router placement, showing signal coverage strength (dBm) across all floors and exact router locations.
+pareto_front.html: A scatter plot visualizing the multi-objective trade-offs (Coverage vs. Power vs. Interference), allowing users to hover and select the "sweet spot" solution.
+convergence_plot.html: Tracks the optimization progress over generations, demonstrating how the AI improves fitness (minimizing uncovered sensors and power) over time.
 
-1.  Start the editor server:
-    ```bash
-    python tools/editor/server.py
-    ```
-2.  Open your browser and navigate to: `http://localhost:8000`
+📉 Baseline Comparisons
+solution_map_random.html: 3D heatmap for the best Random Search solution, used as a baseline to visually demonstrate the AI's superior coverage efficiency.
+solution_map_grid.html: 3D heatmap for the best Grid/Uniform deployment, highlighting the AI's advantage over naive manual placement.
+energy_boxplot.html: Statistical comparison of Power Consumption (Watts) between AI, Grid, and Random methods, showing the AI's energy savings.
+interference_boxplot.html: Statistical comparison of Signal Interference, validating the AI's ability to minimize channel overlap compared to baselines.
+coverage_efficiency.html: Bar chart comparing Uncovered Sensors at fixed energy budgets (10W, 20W, 30W), proving the AI achieves better coverage for the same power.
+🏗️ Physics Validation Scenarios
 
-You can draw rooms, add walls, and save layouts directly to the `layouts/` directory.
+scenario_A_vertical.html: A controlled test verifying vertical signal propagation, showing how signals penetrate floors in a multi-story environment.
+scenario_B_shadow.html: A controlled test verifying obstacle shadowing, visualizing how concrete walls and cores attenuate signals and create dead zones.
+
+
 
 ## Configuration
 
@@ -84,11 +107,3 @@ You can customize the simulation settings in two ways:
 -   `main.py`: Entry point for the simulation.
 -   `layout.json`: The currently active layout file.
 
-## Results
-
-After running the simulation, open the generated HTML files in your browser:
-```bash
-Start-Process pareto_front.html; Start-Process solution_map.html
-```
--   **`pareto_front.html`**: Interactive scatter plot showing the trade-offs between objectives.
--   **`solution_map.html`**: 3D visualization of the best found router placements.
